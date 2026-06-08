@@ -1,0 +1,290 @@
+<template>
+  <div class="pt-[20px]" 
+  v-if="permission.can(tassiliInput.tassiliFormList[tassililisting.urlCustomValidation]['info']['permissions'])">
+    
+    <form @submit.prevent="update()">
+      <div class="conteneurForm"> 
+      <template
+        v-for="([key, field], index) in Object.entries(tassiliInput.form[tassililisting.urlCustomValidation]).filter(([_, f]) => f.type !== 'Hidden')"
+        :key="key">
+       
+       <InputText v-if="field.type === 'Text'" 
+       :FormKey="tassililisting.urlCustomValidation"  :cle="key" />
+
+       <Textarea v-if="field.type === 'Textarea'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+        <InputNumber v-if="field.type === 'Number'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <Password v-if="field.type === 'Password'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <InputSelect v-if="field.type === 'Select'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <InputDate v-if="field.type === 'Date'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <InputRadio v-if="field.type === 'Radio'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <Checkbox v-if="field.type === 'Checkbox'" 
+        :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <CheckboxList v-if="field.type === 'CheckboxList'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <RichEditor v-if="field.type === 'Quill'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <InputFileEdit v-if="field.type === 'File'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+      
+       <Repeteur v-if="field.type === 'Repeater'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <Signature v-if="field.type === 'Signature'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       <MultipleFileEdit v-if="field.type === 'MultipleFile'" 
+       :FormKey="tassililisting.urlCustomValidation" :cle="key" />
+
+       </template>
+      </div>
+
+      <div class="pt-[10px] p-[0px]">
+        <button
+          :disabled="isSubmitting"
+          :class="[
+            'bg-[blue] w-[160px] text-white p-[9px] rounded-[2px] flex justify-center items-center',
+            { 'opacity-50 cursor-not-allowed': isSubmitting }
+          ]"
+          type="submit"
+        >
+          <span v-if="!isSubmitting">Update</span>
+          <span v-else class="loader"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { TassiliInput } from '@/vendor/TassiliLibs/stores/tassiliInput';
+import InputText from '../Inputs/InputText.vue';
+import Textarea from '../Inputs/Textarea.vue';
+import InputNumber from '../Inputs/InputNumber.vue';
+import Password from '../Inputs/Password.vue';
+import InputSelect from '../Inputs/InputSelect.vue';
+import InputDate from '../Inputs/InputDate.vue';
+import InputRadio from '../Inputs/InputRadio.vue';
+import Checkbox from '../Inputs/Checkbox.vue';
+import CheckboxList from '../Inputs/CheckboxList.vue';
+import RichEditor from '../Inputs/RichEditor.vue';
+import InputFileEdit from '../Inputs/InputFileEdit.vue';
+import MultipleFileEdit from '../Inputs/MultipleFileEdit.vue';
+import Signature from '../Inputs/Signature.vue';
+import Repeteur from '../Inputs/Repeteur.vue';
+import { TassiliListing } from '@/vendor/TassiliLibs/stores/tassiliListing';
+import { router, usePage } from '@inertiajs/vue3';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { computed } from "vue";
+import { Permission } from '../stores/permission.js';
+
+const permission = Permission()
+const page = usePage();
+const tassiliInput = TassiliInput();
+const tassililisting = TassiliListing();
+const isSubmitting = ref(false);
+
+const smCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassililisting?.urlCustomValidation]?.info?.grid?.sm || 1
+);
+const mdCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassililisting?.urlCustomValidation]?.info?.grid?.md || 1
+);
+const lgCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassililisting?.urlCustomValidation]?.info?.grid?.lg || 1
+);
+const xlCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassililisting?.urlCustomValidation]?.info?.grid?.xl || 1
+);
+
+function cleanQuillContent(html) {
+  if (typeof html !== 'string') return html;
+  return html.replace(/<p>\s*<\/p>/g, '').replace(/<p><br><\/p>/g, '').trim();
+}
+
+
+function checkNullable() {
+  let temoin = 0;
+
+  Object.keys(tassiliInput.form[tassililisting.urlCustomValidation]).forEach((champ) => {
+
+   if (tassiliInput.form[tassililisting.urlCustomValidation][champ]['type'] === 'MultipleFile') {
+        if (tassiliInput.form[tassililisting.urlCustomValidation][champ]['options']['existingFiles'].length  === 0 && 
+          tassiliInput.form[tassililisting.urlCustomValidation][champ]['options']['tempUrlTabs'].length === 0 &&
+      tassiliInput.form[tassililisting.urlCustomValidation][champ]['options']['nullable'] === 'yes') {
+         temoin++;
+           }
+    }
+ 
+  });
+
+  return temoin;
+}
+
+
+
+function update() {
+
+const temoin = checkNullable();
+
+if (temoin > 0) {
+  const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+  notyf.error(`${temoin} fields(s) multiple required are missing(s).`);
+  return;
+}
+
+
+  isSubmitting.value = true;
+  const formData = new FormData();
+
+  formData.append(
+    'urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU',
+    tassililisting.urlCustomValidation
+  );
+
+   formData.append(
+    'permissions17485RRY4R4RD9448RK48K4RFRFIRU',
+    JSON.stringify(tassiliInput.tassiliFormList[tassililisting.urlCustomValidation]['info']['permissions']) 
+  );
+  formData.append('id', tassililisting.recordAction['id']);
+
+  Object.keys(tassiliInput.form[tassililisting.urlCustomValidation]).forEach((key) => {
+
+
+    const tab1 = ['MultipleFile']
+    if (tab1.includes(tassiliInput.form[tassililisting.urlCustomValidation][key]['type'])) {
+    if(!tassiliInput.form[tassililisting.urlCustomValidation][key]['value'] || tassiliInput.form[tassililisting.urlCustomValidation][key]['value'].length === 0) {
+      formData.append(key, '');
+    }
+    else if (Array.isArray(tassiliInput.form[tassililisting.urlCustomValidation][key]['value'])) {
+      tassiliInput.form[tassililisting.urlCustomValidation][key]['value'].forEach((file, index) => {
+        formData.append(`${key}[]`, file);
+      });
+    }
+ 
+
+     const  temp = tassiliInput.form[tassililisting.urlCustomValidation][key]['options']['existingFiles'] || '[]';
+     const index = key + '_newtab'
+      formData.append(index, JSON.stringify(temp));
+
+    
+    } 
+
+
+    const tab2 = ['File'];
+    if(tab2.includes(tassiliInput.form[tassililisting.urlCustomValidation][key]['type'])) {
+      formData.append(key , tassiliInput.form[tassililisting.urlCustomValidation][key]['value']);
+    }
+
+
+    const tab3 = [
+      'Text','Date','Hidden','Select','Number','Radio','Checkbox','CheckboxList','Password','Textarea'
+    ,'Signature'];
+    if (tab3.includes(tassiliInput.form[tassililisting.urlCustomValidation][key]['type'])) {
+      formData.append(key, tassiliInput.form[tassililisting.urlCustomValidation][key]['value']);
+    }
+
+
+    const tab4 = ['Quill'];
+    if(tab4.includes(tassiliInput.form[tassililisting.urlCustomValidation][key]['type'])) {
+      formData.append(key, cleanQuillContent(tassiliInput.form[tassililisting.urlCustomValidation][key]['value'] || ''));
+    }
+
+
+
+if (tassiliInput.form[tassililisting.urlCustomValidation][key]['type'] === 'Repeater' ) {
+
+   tassiliInput.form[tassililisting.urlCustomValidation][key]['value'].forEach((item, i) => {
+    Object.entries(item).forEach(([subKey, subValue]) => {
+
+       if(tassiliInput.form[tassililisting.urlCustomValidation][key]['fields'][subKey]['type'] === 'Quill') {
+          subValue  = cleanQuillContent(subValue || '')
+      }
+
+      formData.append(`${key}[${i}][${subKey}]`, subValue);
+
+    });
+  });
+
+
+}
+
+
+
+  });
+
+  router.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', formData, {
+    forceFormData: true,
+    onError: (errors) => {
+      tassiliInput.setError(tassililisting.urlCustomValidation ,errors);
+      isSubmitting.value = false;
+    },
+    onSuccess: () => {
+      tassililisting.customActionModal = false;
+      isSubmitting.value = false;
+      const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+      notyf.success('Record Updated');
+    },
+  });
+}
+</script>
+
+<style lang="css" scoped>
+.conteneurForm {
+    display: grid;
+    grid-template-columns: repeat(v-bind(smCols), 1fr);
+    gap: 10px;
+  }
+@media (min-width: 640px) { 
+  .conteneurForm {
+    display: grid;
+    grid-template-columns: repeat(v-bind(mdCols), 1fr);
+  }
+}
+
+@media (min-width: 768px) { 
+  .conteneurForm {
+    display: grid;
+    grid-template-columns: repeat(v-bind(lgCols), 1fr);
+  }
+}
+
+@media (min-width: 1024px) { 
+  .conteneurForm {
+   display: grid;
+   grid-template-columns: repeat(v-bind(xlCols), 1fr);
+  
+  }
+}
+
+.loader {
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

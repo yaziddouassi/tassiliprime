@@ -1,0 +1,52 @@
+<template>
+    <div>
+ 
+    <div class="overflow-x-auto p-[10px] pt-[15px]">
+        <table class="min-w-full bg-[#DDD] text-center">
+          <thead>
+            <tr class="border-[darkblue]   border-b-[0px] border-t-[0px] text-[darkblue]">
+              <th class="py-[40px] px-[10px]  font-medium"></th>
+              <th class="py-3 px-[10px]  font-medium">Id</th>
+              <th class="py-3 px-[10px]  font-medium">Name</th>
+              <th class="py-3 px-[10px]  font-medium ">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody v-if="page.props.tassiliSettings.items.data.length">
+            <tr v-for="item in page.props.tassiliSettings.items.data" :key="item.id"
+              class="border-b even:bg-[#ddd] odd:bg-[#e4e4e4]">
+              <td class="min-w-[40px]"> 
+                <BulkCheckbox :ide="item.id" />
+              </td>
+              <td class="py-3 px-4">{{item.id}}</td>
+              <td class="py-3 px-4">{{item.name}}</td>
+              <td class="py-3 px-4 max-w-[300px]">
+                 <CustumAction :record="item" :class="'flex flex-wrap justify-center gap-2'">
+                </CustumAction>
+
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <Paginator :pagination="page.props.tassiliSettings.items" />
+      </div>
+
+    </div>
+ </template>
+ 
+ <script setup>
+import BulkCheckbox from '@/vendor/TassiliLibs/Listing/BulkCheckbox.vue';
+import CustumAction from '@/vendor/TassiliLibs/Listing/CustumAction.vue';
+import Paginator from '@/vendor/TassiliLibs/Paginator.vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage()
+
+ </script>
+ 
+ <style lang="css" scoped>
+ 
+ </style>

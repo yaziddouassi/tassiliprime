@@ -1,0 +1,55 @@
+<script setup>
+import { Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
+
+const props = defineProps({
+  pagination: Object,
+  pageParam: {
+    type: String,
+    default: 'page'
+  }
+})
+
+const currentUrl = computed(() => new URL(window.location.href))
+const currentQueryParams = computed(() => {
+  const params = new URLSearchParams(currentUrl.value.search)
+  // Supprimer uniquement le paramètre de page spécifique
+  params.delete(props.pageParam)
+  return params
+})
+
+const mergeQuery = (url) => {
+  if (!url) return ''
+
+  const parsedUrl = new URL(url, window.location.origin)
+  const newParams = new URLSearchParams(parsedUrl.search)
+
+  // Conserver tous les autres paramètres
+  for (const [key, value] of currentQueryParams.value.entries()) {
+    if (!newParams.has(key)) {
+      newParams.set(key, value)
+    }
+  }
+
+  parsedUrl.search = newParams.toString()
+  return parsedUrl.pathname + parsedUrl.search
+}
+</script>
+
+<template>
+  <div class="relative flex flex-wrap justify-center gap-[2px] m-auto mt-[15px] p-[5px] max-w-[1000px]">
+    <template v-for="link in pagination.links" :key="link.label">
+      <Link
+        v-if="link.url"
+        preserve-state
+        preserve-scroll
+        :href="mergeQuery(link.url)"
+        v-html="link.label"
+        class="flex items-center justify-center px-3 py-2 text-sm rounded-lg text-gray-600 border border-grey"
+        :class="{
+          'bg-blue-700 text-white': link.active,
+        }"
+      />
+    </template>
+  </div>
+</template>

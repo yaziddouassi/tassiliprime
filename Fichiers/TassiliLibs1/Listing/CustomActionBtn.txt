@@ -1,0 +1,116 @@
+<template>
+  <div
+  v-if="permission.can(tassiliInput.tassiliFormList[props.cle]['info']['permissions'])">
+   <div @click="openForm(props.cle,props.record)"> 
+      <button :class="tassiliInput.tassiliFormList[props.cle]['info']['class']" 
+      class="bg-[blue] text-white p-2 rounded-[3px] h-[40px] flex items-center justify-center">
+        <span class="material-icons text-[20px] leading-none">
+            {{ tassiliInput.tassiliFormList[props.cle]['info']['icon'] }}
+        </span>
+        <span>
+           {{ tassiliInput.tassiliFormList[props.cle]['info']['text'] }}
+        </span>
+      </button>
+    </div>
+
+ </div>
+</template>
+
+<script setup>
+import { TassiliListing } from '@/vendor/TassiliLibs/stores/tassiliListing'
+import {TassiliInput}    from '@/vendor/TassiliLibs/stores/tassiliInput'
+import { usePage } from '@inertiajs/vue3';
+import { Permission } from '../stores/permission';
+
+const props = defineProps({
+   record : {
+    type: Object,
+    required: true
+  },
+  cle : {
+    type: String,
+    required: true
+  },
+})
+
+const tassililisting = TassiliListing();
+const tassiliInput = TassiliInput()
+const permission = Permission()
+const page = usePage()
+
+
+function openForm(a,b) {
+tassililisting.urlCustomValidation = a
+tassililisting.recordAction = b
+tassiliInput.form[a] = JSON.parse(JSON.stringify(tassiliInput.tassiliFormList[props.cle]['fields']))
+
+//console.log(tassiliInput.tassiliFormList[props.cle]['info']['permissions']);
+
+
+Object.entries(b).forEach(([key, value]) => {
+  
+
+  if(key in tassiliInput.form[a]) {
+
+
+const tab1 = ['Text','Date','Number','Hidden','Select','Checkbox','Radio','Quill','Textarea','Signature'];
+
+if(tab1.includes(tassiliInput.form[a][key]['type'])) {
+
+tassiliInput.form[a][key]['value'] = value
+}
+
+
+else if(tassiliInput.form[a][key]['type']  == 'File') {
+tassiliInput.form[a][key]['options']['urlRecord'] = value
+}
+
+else if(tassiliInput.form[a][key]['type']  === 'CheckboxList'  || 
+   tassiliInput.form[a][key]['type']  === 'Repeater') {
+
+  const data = new Proxy(
+  JSON.parse(value),
+  {}
+);
+tassiliInput.form[a][key]['value'] = data
+}
+
+
+else if(tassiliInput.form[a][key]['type']  === 'MultipleFile') {
+
+
+ const data = new Proxy(
+ JSON.parse(value) ,
+  {}
+);
+
+
+ tassiliInput.form[a][key]['options']['existingFiles'] = data
+
+}
+
+
+  }
+});
+
+
+if(tassiliInput.tassiliFormList[props.cle]['info']['wizardActive'] === 'yes') {
+tassiliInput.tassiliFormList[props.cle]['info']['wizardCurrent'] = 1
+}
+
+
+tassiliInput.resetError()
+
+tassililisting.customActionModal  = true
+}
+ 
+function closeForm() {
+  
+}
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>
+    

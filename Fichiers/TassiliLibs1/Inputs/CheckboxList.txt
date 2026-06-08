@@ -1,0 +1,132 @@
+<template>
+  <div class="w-full mb-[5px]">
+    <div>
+      <span class="font-bold"> {{  tassiliInput.form[props.FormKey][props.cle]['options']['label']}}</span>
+    </div>
+
+    <div class="space-y-2 mt-2">
+      <div
+        v-for="(option, index) in options"
+        :key="option"
+        class="flex items-center space-x-2"
+      >
+        <input
+          :disabled="tassiliInput.form[props.FormKey][props.cle]['options']['readOnly'] === 'yes'"
+          type="checkbox"
+          class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          :value="option"
+          v-model="tassiliInput.form[props.FormKey][props.cle]['value']"
+        />
+        <label class="text-sm">
+          {{ labels[index] }}
+        </label>
+      </div>
+    </div>
+
+    <div v-if="tassiliInput.errors[FormKey]" class="text-[red]">
+        <span v-if="tassiliInput.errors[FormKey][cle]">
+            {{ tassiliInput.errors[FormKey][cle] }}
+        </span>
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import {TassiliInput} from '@/vendor/TassiliLibs/stores/tassiliInput'
+import { onMounted, watch } from 'vue'
+import { computed } from "vue";
+
+const props = defineProps({
+  FormKey : {
+    type :  String
+  },
+  cle : {
+    type :  String
+  },
+});
+
+
+const tassiliInput = TassiliInput();
+
+const smSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['sm'] || 1 
+);
+
+const mdSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['md'] || 1 
+);
+
+const lgSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['lg'] || 1 
+);
+
+const xlSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['xl'] || 1 
+);
+
+const options = tassiliInput.form[props.FormKey][props.cle]['options']?.contents || []
+const labels =  tassiliInput.form[props.FormKey][props.cle]['options']?.labels || []
+
+function tab1InclutTab2(tab1, tab2) {
+  return tab2.every(item => tab1.includes(item))
+}
+
+// Nettoyage de la valeur au montage (ex: string JSON → tableau)
+onMounted(() => {
+  const currentValue = tassiliInput.form[props.FormKey][props.cle]['value']
+  if (typeof currentValue === 'string') {
+    try {
+      const parsed = JSON.parse(currentValue)
+      if (Array.isArray(parsed)) {
+        tassiliInput.form[props.FormKey][props.cle]['value'] = parsed
+      } else {
+        tassiliInput.form[props.FormKey][props.cle]['value'] = []
+      }
+    } catch {
+      tassiliInput.form[props.FormKey][props.cle]['value'] = []
+    }
+  }
+})
+
+// Watch pour valider que toutes les valeurs sont valides
+watch(
+  () => tassiliInput.form[props.FormKey][props.cle]['value'],
+  (newValue) => {
+    const allowed = tassiliInput.form[props.FormKey][props.cle]['options']?.contents || []
+
+    // S'il y a des éléments dans la valeur qui ne sont pas valides, on réinitialise
+    const isArray = Array.isArray(newValue)
+    const isValid = isArray && newValue.every(item => allowed.includes(item))
+
+    if (!isValid) {
+      tassiliInput.form[props.FormKey][props.cle]['value'] = []
+    }
+  },
+  { immediate: true }
+)
+</script>
+
+<style lang="css" scoped>
+.boite {
+  grid-column: span v-bind(smSpan);
+}
+
+@media (min-width: 640px) { 
+  .boite {
+  grid-column: span v-bind(mdSpan);
+}
+}
+
+@media (min-width: 768px) { 
+  .boite {
+  grid-column: span v-bind(lgSpan);
+}
+}
+
+@media (min-width: 1024px) { 
+ .boite {
+  grid-column: span v-bind(xlSpan);
+}
+}
+</style>

@@ -1,0 +1,38 @@
+<template>
+    <div>
+              <span v-if="!tassiliBulk.bulkTabs[props.collection].includes(ide)"
+                 @click="tassiliBulk.AddActionIds(collection,ide)"
+                 class="w-4 h-4 inline-block">
+                    <Svg1 />
+                </span>
+
+                <span v-if="tassiliBulk.bulkTabs[props.collection].includes(ide)"
+                 @click="tassiliBulk.RemoveActionIds(collection,ide)"
+                class="inline-block">
+                  <Svg2 />
+                  </span>
+    </div>
+</template>
+
+<script setup>
+import Svg1 from '../Listing/Svg1.vue';
+import Svg2 from '../Listing/Svg2.vue';
+import { TassiliBulk } from '../stores/tassiliBulk';
+
+const props = defineProps({
+  collection : {
+    type :  String
+  },
+   ide : {
+    type: Number,
+    required: true
+  },
+});
+const tassiliBulk = TassiliBulk()
+
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>

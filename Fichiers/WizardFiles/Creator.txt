@@ -1,0 +1,34 @@
+<template>
+  <div class="min-[800px]:flex w-full text-black">
+    <SideBarre/>
+
+     <div class="min-h-[100vh] w-full  overflow-x-auto bg-[#DFDFDF]">
+        <NavBarre/> 
+        <TopPage/>
+
+        <WizardCreate :classForm="page.props.pageSettings.className"
+           :action="page.props.pageSettings.action"/> 
+
+        <ModalForm/>
+        
+     </div>
+
+  </div>
+</template>
+
+<script setup>
+import SideBarre from '../../SideBarre.vue';
+import NavBarre from '../../NavBarre.vue';
+import { formService } from '@/vendor/TassiliLibs/Service/formService';
+import WizardCreate from '@/vendor/TassiliLibs/Forms/WizardCreate.vue';
+import TopPage from '@/vendor/TassiliLibs/Creator/TopPage.vue';
+import ModalForm from '@/vendor/TassiliLibs/Forms/ModalForm.vue';
+import { usePage } from '@inertiajs/vue3';
+import { Permission } from '@/vendor/TassiliLibs/stores/permission.js';
+
+const {setForm} = formService()
+const permission = Permission()
+const page = usePage()
+setForm()
+
+</script>

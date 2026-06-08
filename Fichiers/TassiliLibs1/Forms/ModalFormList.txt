@@ -1,0 +1,44 @@
+<template>
+    <div>
+
+       <div class="flex flex-wrap justify-center gap-2">
+        <template v-for="(value ,key) in tassiliBulk.modalFormList[props.collection]" >
+           <modal-form-btn :collection="props.collection" :record="props.record" :cle="key" />
+        </template>
+
+         <div>
+             <BtnDelete2 :item="props.record" :collection="props.collection" />
+          </div>
+
+        <slot></slot>
+
+       </div>
+
+
+    </div>
+</template>
+
+<script setup>
+import { TassiliBulk } from '../stores/tassiliBulk';
+import ModalFormBtn from './ModalFormBtn.vue';
+import BtnDelete2 from '../Listing/BtnDelete2.vue';
+const props = defineProps({
+  collection : {
+    type: String,
+    required: true
+  },
+   record : {
+    type: Object,
+    required: true
+  },
+  })
+
+const tassiliBulk = TassiliBulk()
+
+
+
+</script>
+
+<style lang="css" scoped>
+
+</style>

@@ -1,0 +1,38 @@
+<template>
+    <div v-if="tassiliInput.tassiliFormList[formKey]">
+
+
+      <FormCreateInside :formKey="formKey" />
+
+
+    </div>
+</template>
+
+<script setup>
+import { TassiliInput } from '../stores/tassiliInput';
+import FormCreateInside from './FormCreateInside.vue';
+
+const props = defineProps({
+  classForm : {
+    type: String,
+    required: true
+  },
+  action : {
+    type: String,
+    required: true
+  },
+})
+
+const tassiliInput = TassiliInput()
+
+
+const formKey = props.classForm + '-fonction-' + props.action
+
+
+
+
+</script>
+
+<style lang="css" scoped>
+
+</style>

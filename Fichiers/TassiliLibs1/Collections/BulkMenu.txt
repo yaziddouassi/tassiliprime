@@ -1,0 +1,115 @@
+<template>
+    <div v-if="tassiliBulk.bulkTabs[props.collection] != 0">
+        <div class="h-[32px]">
+           <div class="flex">
+           <div class="w-[32px] h-[32px] cursor-pointer"
+           @click="open()">
+             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="8" r="2.5" fill="currentColor"/>
+                <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+                <circle cx="16" cy="24" r="2.5" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <div class="pt-[5px] pl-[10px]"
+                v-if="tassiliBulk.bulkTabs[props.collection] != 0 ">
+               <span>
+                 {{ tassiliBulk.bulkTabs[props.collection].length }}
+               </span>
+                <span>
+               Selected &nbsp;
+             </span>
+             <span @click="tassiliBulk.resetActionIds(collection)"
+              class="text-yellow-700 cursor-pointer hover:underline">
+              Clear Tabs
+           </span>
+           </div>
+        </div> 
+
+            <div  
+            class="pt-[20px] pb-[20px] bg-[#EEE] rounded-[5px] w-[250px] mt-[5px] relative z-20" 
+             v-show="tassiliBulk.bulkOpens[props.collection]=='yes' &&
+              tassiliBulk.bulkTabs[props.collection] != 0 ">
+                <template v-for="(value,index) in tassiliBulk.bulks[props.collection]">
+                    <div class="pl-[3px]  text-[14px] flex"
+                      v-if="permission.can(tassiliBulk.bulks[props.collection][index]['permissions'])" 
+                      @click="handleClick(index)">
+                      <div class="cursor-pointer">
+                      <span class="material-icons">
+                      {{ value['icon'] }}
+                      </span>
+                      </div>
+                      <div class="pt-[3px] cursor-pointer hover:underline">
+                      <span>
+                       &nbsp; {{ value['label'] }}
+                      </span>
+                      </div>
+                   </div>
+                </template>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</template>
+
+<script setup>
+import { TassiliBulk } from '../stores/tassiliBulk';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { useForm } from '@inertiajs/vue3'
+import { Permission } from '../stores/permission';
+
+const props = defineProps({
+  collection : {
+    type :  String
+  },
+});
+
+const permission = Permission()
+const tassiliBulk = TassiliBulk()
+const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+
+function open() {
+    
+    if(tassiliBulk.bulkOpens[props.collection]=='no') {
+      tassiliBulk.bulkOpens[props.collection] = 'yes'
+    }
+    else if(tassiliBulk.bulkOpens[props.collection]=='yes') {
+      tassiliBulk.bulkOpens[props.collection] = 'no'
+    }
+}
+
+
+ const handleClick = (cle) => {
+  if (confirm(tassiliBulk.bulks[props.collection][cle].confirmation)) {
+
+    const form = useForm({
+         actionIds:  tassiliBulk.bulkTabs[props.collection],
+         urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU: tassiliBulk.bulks[props.collection][cle].url,
+         permissions17485RRY4R4RD9448RK48K4RFRFIRU:JSON.stringify(tassiliBulk.bulks[props.collection][cle]['permissions']),
+     })
+    
+    form.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', {
+     preserveScroll: true,
+     preserveState: true,
+     onSuccess: () => {
+      tassiliBulk.resetActionIds(props.collection)
+      notyf.success(tassiliBulk.bulks[props.collection][cle].message);
+    }
+
+     })
+
+  } else {
+    
+  }
+}
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>

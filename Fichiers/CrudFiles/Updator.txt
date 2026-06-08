@@ -1,0 +1,38 @@
+<template>
+  <div class="min-[800px]:flex w-full text-black">
+    <SideBarre/>
+
+     <div class="min-h-[100vh] w-full  overflow-x-auto bg-[#DFDFDF]">
+        <NavBarre/> 
+        <TopPage/>
+    
+        <div v-if="page.props.record">
+          <FormUpdate :classForm="page.props.pageSettings.className"
+           :action="page.props.pageSettings.action" :record="page.props.record" />
+        </div>
+
+        <ModalForm />
+
+     </div>
+
+  </div>
+</template>
+
+<script setup>
+import SideBarre from '../../SideBarre.vue';
+import NavBarre from '../../NavBarre.vue';
+import { formService } from '@/vendor/TassiliLibs/Service/formService';
+import FormUpdate from '@/vendor/TassiliLibs/Forms/FormUpdate.vue';
+import ModalForm from '@/vendor/TassiliLibs/Forms/ModalForm.vue';
+import { TassiliInput } from '@/vendor/TassiliLibs/stores/tassiliInput';
+import TopPage from '@/vendor/TassiliLibs/Updator/TopPage.vue';
+import { usePage } from '@inertiajs/vue3';
+import { Permission } from '@/vendor/TassiliLibs/stores/permission.js';
+
+const {setForm} = formService()
+const permission = Permission()
+const page = usePage()
+const tassiliInput = TassiliInput()
+setForm()
+
+</script>

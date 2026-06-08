@@ -1,0 +1,105 @@
+<template>
+  <div class="w-full mb-[5px]">
+    <div>
+       <span class="font-bold"> {{  tassiliInput.form[props.FormKey][props.cle]['fields'][props.cle3]['options']['label']}}</span>
+    </div>
+
+    <div>
+      <select
+        class="w-full bg-[#E8E8E8] h-[50px] border-[darkblue] border-[1px]
+        text-center"
+        :disabled="tassiliInput.form[props.FormKey][props.cle]['fields'][props.cle3]['options']['readOnly'] === 'yes'"
+        v-model="tassiliInput.form[props.FormKey][props.cle]['value'][props.cle2][props.cle3]">
+        <option value="">-- Select --</option>
+        <option
+          v-for="(option, index) in tassiliInput.form[props.FormKey][props.cle]['fields'][props.cle3]['options']['contents']"
+          :key="option"
+          :value="option"
+        >
+          {{ tassiliInput.form[props.FormKey][props.cle]['fields'][props.cle3]['options']['labels'][index] }}
+        </option>
+      </select>
+    </div>
+
+    
+     <div v-if="tassiliInput.errors[`${props.FormKey}.${props.cle}.${props.cle2}.${props.cle3}`]" class="text-[red]">
+           {{ tassiliInput.errors[`${props.FormKey}.${props.cle}.${props.cle2}.${props.cle3}`] }}
+      </div>
+
+  </div>
+</template>
+
+<script setup>
+import { watch } from 'vue'
+import {TassiliInput} from '@/vendor/TassiliLibs/stores/tassiliInput'
+import { computed } from "vue";
+
+const props = defineProps({
+   FormKey : {
+    type :  String
+  },
+  cle : {
+    type :  String
+  },
+  cle2 : {
+    type :  Number
+  },
+  cle3 : {
+    type :  String
+  },
+});
+
+
+const tassiliInput = TassiliInput();
+
+const smSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['fields']?.[props.cle3]?.['options']?.['colSpan']?.['sm'] || 1 
+);
+
+const mdSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['fields']?.[props.cle3]?.['options']?.['colSpan']?.['md'] || 1 
+);
+
+const lgSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['fields']?.[props.cle3]?.['options']?.['colSpan']?.['lg'] || 1 
+);
+
+const xlSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['fields']?.[props.cle3]?.['options']?.['colSpan']?.['xl'] || 1 
+);
+// Vérification au chargement et à chaque changement
+watch(
+  () => tassiliInput.form[props.FormKey][props.cle]['value'][props.cle2][props.cle3],
+  (newValue) => {
+    const options = tassiliInput.form[props.FormKey][props.cle]['fields'][props.cle3]['options']['contents']
+    if (!options.includes(newValue)) {
+      tassiliInput.form[props.FormKey][props.cle]['value'][props.cle2][props.cle3] = ''
+    }
+  },
+  { immediate: true }
+)
+</script>
+
+<style lang="css" scoped>
+.boiteSmall {
+  grid-column: span v-bind(smSpan);
+}
+
+@media (min-width: 640px) { 
+  .boiteSmall{
+  grid-column: span v-bind(mdSpan);
+}
+}
+
+@media (min-width: 768px) { 
+  .boiteSmall {
+  grid-column: span v-bind(lgSpan);
+}
+}
+
+@media (min-width: 1024px) { 
+ .boiteSmall {
+  grid-column:  span v-bind(xlSpan);
+}
+}
+</style>

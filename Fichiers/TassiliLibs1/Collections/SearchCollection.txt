@@ -1,0 +1,97 @@
+<template>
+    <div class="w-full">
+
+        <div class="w-full flex min-[900px]:ml-auto min-[900px]:w-[230px]
+        bg-[#EEE] h-[50px] rounded-[25px] pl-[12px]">
+          
+        <div class="w-full pt-[4px] rounded-[25px]">
+        <input
+          v-model="search" @keyup="onKeyUp"
+          placeholder="Search ..."
+          class="w-full bg-[#EEE] h-[42px] border-[0px] border-transparent focus:border-transparent focus:ring-0"
+        />
+      </div>
+      <div class="pr-[6px] pt-[12px]">
+        <svg
+          @click="rezetInput()"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="12" cy="12" r="11" stroke="black" stroke-width="1" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="black" stroke-width="1" />
+          <line x1="7" y1="17" x2="17" y2="7" stroke="black" stroke-width="1" />
+        </svg>
+      </div>
+
+        </div>
+       
+    </div>
+</template>
+
+<script setup>
+import { usePage } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
+import { ref, onMounted } from 'vue'
+
+const props = defineProps({
+  collection : {
+    type :  String
+  },
+});
+
+const page = usePage()
+const search = ref('')
+const debounceTimer = ref(null)
+
+const queryName = page.props.tassiliSettings.collections[props.collection]['queryName']
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.has(queryName)) {
+    search.value = urlParams.get(queryName)
+  }
+})
+
+function replaceQuery() {
+  const currentQuery = Object.fromEntries(new URLSearchParams(window.location.search))
+
+  if (search.value) {
+    currentQuery[queryName] = search.value
+  } else {
+    delete currentQuery[queryName]
+  }
+
+  router.get(window.location.pathname, currentQuery, {
+    preserveState: true,
+    preserveScroll: true,
+    replace: true,
+  })
+}
+
+function onKeyUp() {
+  clearTimeout(debounceTimer.value)
+  debounceTimer.value = setTimeout(() => {
+    replaceQuery()
+  }, 800)
+}
+
+function rezetInput() {
+  search.value = null
+
+  const currentQuery = Object.fromEntries(new URLSearchParams(window.location.search))
+  delete currentQuery[queryName]
+
+  router.get(window.location.pathname, currentQuery, {
+    preserveState: true,
+    preserveScroll: true,
+    replace: true,
+  })
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>

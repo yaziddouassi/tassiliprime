@@ -1,0 +1,64 @@
+<template>
+    <div v-if="permission.can(tassililisting.groupActions[props.cle]['permissions'])"
+    class="flex items-center space-x-1" 
+    :class="[tassililisting.groupActions[props.cle].class]">
+      <span class="material-icons text-[15px] relative top-[1px] cursor-pointer" @click="handleClick">
+        {{ tassililisting.groupActions[props.cle].icon }} 
+      </span> 
+      <span class="cursor-pointer" @click="handleClick">
+        {{ tassililisting.groupActions[props.cle].label }}
+      </span>
+    </div>
+  </template>
+
+<script setup>
+import { TassiliListing } from '@/vendor/TassiliLibs/stores/tassiliListing'
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { useForm } from '@inertiajs/vue3'
+import { Permission } from '../stores/permission';
+
+const props = defineProps({
+    cle: {
+      type: String,
+      required: true
+    },
+  })
+
+
+
+const permission = Permission()
+const tassililisting = TassiliListing();
+
+const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+  const handleClick = () => {
+  if (confirm(tassililisting.groupActions[props.cle].confirmation)) {
+
+    const form = useForm({
+         actionIds:  tassililisting.actionIds,
+         urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU:  tassililisting.groupActions[props.cle].url,
+         permissions17485RRY4R4RD9448RK48K4RFRFIRU:JSON.stringify(tassililisting.groupActions[props.cle]['permissions']),
+     }) 
+    
+    form.post( '/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', {
+     preserveScroll: true,
+     preserveState: true,
+     onSuccess: () => {
+      tassililisting.show = false
+      tassililisting.show2 = false
+      tassililisting.actionIds = []
+      notyf.success(tassililisting.groupActions[props.cle].message);
+    }
+
+     })
+
+  } else {
+    
+  }
+}
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>

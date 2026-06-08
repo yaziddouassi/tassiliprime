@@ -1,0 +1,120 @@
+ <template>
+ <div class="w-full overflow-x-auto">
+  <div class="min-w-[700px] grid grid-cols-2 gap-4">
+    <!-- Colonne de gauche avec contenu aligné à gauche -->
+    <div class="text-left">
+      <div class="flex gap-2 pl-[10px]">
+        <div class="relative w-[40px] pt-[5px] inline-block text-left">
+          <!-- Bouton du menu -->
+         
+          <div class="w-[32px] h-[32px] cursor-pointer" v-if="tassililisting.actionIds.length"
+           @click="ouvrir1()">
+             <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="8" r="2.5" fill="currentColor"/>
+                <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+                <circle cx="16" cy="24" r="2.5" fill="currentColor"/>
+              </svg>
+            </div>
+
+          <!-- Menu déroulant -->
+          <div
+            v-show="tassililisting.show2 && tassililisting.actionIds.length"
+            class="relative z-10 mt-2 w-52 bg-black  text-white p-[5px] rounded-lg shadow-lg border border-gray-200">
+            <div v-for="(item, index) in tassililisting.groupActions" :key="index">
+              <Action :cle="index" />
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-[10px]" v-if="tassililisting.actionIds.length">
+           <span class="text-yellow-700 cursor-pointer" @click="rezetActionIds()">Clear Tabs</span>
+        </div>
+
+        <div class="p-2 pt-[10px] rounded" v-if="tassililisting.actionIds.length">
+          {{ tassililisting.actionIds.length }} <span class="text-[darkblue]">Selected</span> 
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne de droite avec contenu aligné à droite -->
+    <div class="text-right">
+      <div class="flex justify-end gap-2">
+        <div>
+          <FilterSelect2 :cle="'paginationPerPage'" :cle2="'paginationPerPageList'" />
+        </div>
+
+        <div
+          class="border-[1px] border-black p-2 rounded cursor-pointer"
+          @click="confirmRezetFilter"
+        >
+          Clear Filters
+        </div>
+
+        <div
+          class="border-[1px] border-black p-2 rounded cursor-pointer"
+          @click="ouvrir2()"
+        >
+          All Filters
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</template>
+
+
+<script setup>
+import { TassiliListing } from '@/vendor/TassiliLibs/stores/tassiliListing'
+import { TassiliRoutes } from '@/vendor/TassiliLibs/stores/tassiliRoutes'
+import Action from './Action.vue'
+import FilterSelect2 from './FilterSelect2.vue'
+import { router, usePage } from '@inertiajs/vue3'
+import { ref } from 'vue'
+
+
+const page = usePage()
+const open = ref(false)
+const tassililisting = TassiliListing();
+const tassiliroutes  = TassiliRoutes();
+const panelStorage = 'tassili.' + page.props.tassiliSettings.tassiliPanel
+
+function rezetActionIds() {
+  tassililisting.show = false
+  tassililisting.show2 = false
+  tassililisting.actionIds = []
+}
+
+function ouvrir1() {
+  tassililisting.show = false
+  tassililisting.show2 = !tassililisting.show2
+}
+
+function ouvrir2() {
+  tassililisting.show2 = false
+  tassililisting.show = !tassililisting.show
+}
+
+function rezetFilter() {
+
+  const tassili = JSON.parse(localStorage.getItem(panelStorage))
+  tassili[page.props.tassiliSettings.tassiliModelClassName] = {}
+  tassililisting.actionIds = []
+  localStorage.setItem(panelStorage, JSON.stringify(tassili))
+
+  tassiliroutes.setRoutes(page.props.tassiliSettings.routes,page.props.tassiliSettings.tassiliPanel)
+
+  router.visit(page.props.tassiliSettings.tassiliDataRouteListe, {
+    method: 'get',
+    preserveState: false,
+  })
+}
+
+function confirmRezetFilter() {
+  if (confirm('Are you sure you want to reset all filters?')) {
+    rezetFilter()
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+</style>

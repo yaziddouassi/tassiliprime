@@ -1,0 +1,123 @@
+<template>
+    <div class="w-full p-[10px]"
+    v-if="props.collection && page.props.tassiliSettings.collections?.[props.collection]">
+
+       <div class="text-right"
+       v-if="page.props.tassiliSettings.bulkActifs[props.collection][0] =='yes'">
+         <button class="bg-blue-800 min-w-[120px] text-white p-[9px] rounded-[5px]"
+         @click="tassiliInput.openFormCreate(page.props.tassiliSettings.collections[props.collection]['urlCreation'])">
+           + {{ props.collection }}</button>
+       </div>
+
+       <div class="min-[900px]:grid grid-cols-2 gap-4 pt-[10px]">
+          <div>
+              <BulkMenu v-if="page.props.tassiliSettings.bulkActifs[props.collection][1] =='yes'"
+                :collection="props.collection" 
+              /> 
+           </div>
+           <SearchCollection :collection="props.collection" 
+           /> 
+         
+        </div>
+
+       <div class="overflow-x-auto">
+       <table class="min-w-full border-collapse bg-[#DDD] text-center">
+          <thead>
+            <tr class="border-[darkblue]   border-b-[0px] border-t-[0px] text-[darkblue]">
+              <th class="py-[40px] px-[10px]  font-medium"
+               v-if="page.props.tassiliSettings.bulkActifs[props.collection][1] =='yes'"
+              ></th>
+              <th class="py-3 px-[10px]  font-medium">Id</th>
+
+              <template v-for="(value, index) in page.props.tassiliSettings.collections[props.collection]['fields']">
+                <th class="py-3 px-[10px]  font-medium capitalize">{{ index }}</th>  
+              </template>
+
+              <th class="py-3 px-[10px]  font-medium "
+               v-if="page.props.tassiliSettings.bulkActifs[props.collection][2] =='yes'"
+              >Actions</th>
+            </tr>
+          </thead>
+
+          <tbody v-if="page.props.tassiliSettings.collections[props.collection]['records'].data.length">
+            <tr v-for="item in page.props.tassiliSettings.collections[props.collection]['records'].data" :key="item.id"
+              class="border-b even:bg-[#ddd] odd:bg-[#e4e4e4]">
+              <td class="whitespace-nowrap"
+               v-if="(page.props.tassiliSettings.bulkActifs[props.collection][1] =='yes')||
+               page.props.tassiliSettings.bulkActifs[props.collection]['urlDelete']"> 
+                <BulkCheckbox :collection="props.collection" :ide="item.id" />
+              </td>
+              <td class="py-3 px-4 whitespace-nowrap">{{item.id}}</td>
+
+               <template v-for="(value, index) in page.props.tassiliSettings.collections[props.collection]['fields']">
+                  
+                 
+                <template v-if="value==='Image'">
+                     <td class="py-3 px-4 whitespace-nowrap">
+                        <ImageView :path="item[index]" :width="'100px'" />
+                      </td>   
+                   </template>
+                   <template v-if="value==='Video'">
+                     <td class="py-3 px-4 whitespace-nowrap">
+                        <VideoView :path="item[index]" :width="'100px'" />
+                      </td>   
+                   </template> 
+                   <template v-if="value==='Audio'">
+                     <td class="py-3 px-4 whitespace-nowrap">
+                        <AudioView :path="item[index]" :width="'100px'" />
+                      </td>   
+                   </template>
+                    <template v-if="value==='column'">
+                     <td class="py-3 px-4 whitespace-nowrap">
+                        {{ item[index] }}
+                      </td>   
+                   </template>
+              </template>
+              
+              <td class="py-3 px-4 whitespace-nowrap"
+               v-if="(page.props.tassiliSettings.bulkActifs[props.collection][2] =='yes') ||
+               page.props.tassiliSettings.bulkActifs[props.collection]['urlDelete']"
+              >
+                 <ModalFormList :collection="props.collection" :record="item">
+                 </ModalFormList>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+       <Paginator :pagination="page.props.tassiliSettings.collections[props.collection]['records']" 
+       :page-param="page.props.tassiliSettings.collections[props.collection]['pagination_page']" />  
+
+    </div>
+</template>
+
+<script setup>
+import { TassiliBulk } from '../stores/tassiliBulk';
+import BulkCheckbox from './BulkCheckbox.vue';
+import BulkMenu from './BulkMenu.vue';
+import ModalFormList from '../Forms/ModalFormList.vue';
+import Paginator from './Paginator.vue';
+import { usePage } from '@inertiajs/vue3';
+import { TassiliInput } from '@/vendor/TassiliLibs/stores/tassiliInput';
+import ImageView from '@/vendor/TassiliLibs/Medias/ImageView.vue';
+import AudioView from '@/vendor/TassiliLibs/Medias/AudioView.vue';
+import VideoView from '@/vendor/TassiliLibs/Medias/VideoView.vue';
+import SearchCollection from './SearchCollection.vue';
+
+const props = defineProps({
+  collection : {
+    type :  String
+  },
+});
+const tassiliBulk = TassiliBulk()
+const tassiliInput = TassiliInput()
+const page = usePage()
+
+
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>

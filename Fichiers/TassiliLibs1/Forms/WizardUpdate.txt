@@ -1,0 +1,34 @@
+<template>
+    <div v-if="tassiliInput.tassiliFormList[formKey]">
+      <WizardUpdateInside :formKey="formKey" :record="props.record"  />
+    </div>
+</template>
+
+<script setup>
+import { TassiliInput } from '../stores/tassiliInput';
+import WizardUpdateInside from './WizardUpdateInside.vue';
+
+const props = defineProps({
+  classForm : {
+    type: String,
+    required: true
+  },
+  action : {
+    type: String,
+    required: true
+  },
+  record : {
+    type: Object,
+    required: true
+  },
+})
+
+const tassiliInput = TassiliInput()
+
+const formKey = props.classForm + '-fonction-' + props.action
+
+</script>
+
+<style lang="css" scoped>
+
+</style>

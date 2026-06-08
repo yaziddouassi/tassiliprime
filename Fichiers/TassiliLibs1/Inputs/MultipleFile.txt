@@ -1,0 +1,227 @@
+<template>
+  <div class="w-full mb-5">
+    <div>
+       <span class="font-bold"> {{  tassiliInput.form[props.FormKey][props.cle]['options']['label']}}</span>
+    </div>
+
+    <div class="w-full flex items-center justify-center">
+      <label class="w-full">
+        <input type="file" ref="fileInputRef" @change="handleFileSelection" multiple hidden />
+        <div 
+          class="flex w-full min-h-[120px] px-4 py-6 border-2 border-dashed border-gray-400 rounded-lg text-gray-600 text-sm font-medium items-center justify-center cursor-pointer transition-all duration-200 hover:border-blue-400 hover:bg-blue-50"
+          :class="{ 'border-blue-500 bg-blue-50': isDragging }"
+          @dragover.prevent="handleDragOver"
+          @dragleave.prevent="handleDragLeave" 
+          @drop.prevent="handleDrop"
+        >
+          <div class="text-center">
+            <div class="mb-2">
+              <svg class="w-8 h-8 mx-auto text-[blue]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+            </div>
+            <p class="font-semibold mb-1">Drag and Drop</p>
+            <p class="text-xs text-gray-500">or click here</p>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <div v-if="tassiliInput.errors[FormKey]" class="text-[red]">
+        <span v-if="tassiliInput.errors[FormKey][cle]">
+            {{ tassiliInput.errors[FormKey][cle] }}
+        </span>
+    </div>
+
+    <!-- Aperçu des fichiers sélectionnés -->
+    <div v-if="tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs'].length" class="mt-4 grid grid-cols-2 gap-4">
+      <div v-for="(preview, index) in tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs']" :key="preview.url" class="relative">
+        <!-- Aperçu Image -->
+        <img v-if="isImage(preview.file)" :src="preview.url" class="w-[100px] h-[100px] object-cover rounded" />
+
+        <!-- Aperçu Audio -->
+        <audio v-else-if="isAudio(preview.file)" controls class="w-[250px]">
+          <source :src="preview.url" :type="preview.file.type" />
+          Your browser does not support the audio element.
+        </audio>
+
+        <!-- Aperçu Vidéo -->
+        <video v-else-if="isVideo(preview.file)" controls class="w-[250px] h-[150px]">
+          <source :src="preview.url" :type="preview.file.type" />
+          Your browser does not support the video element.
+        </video>
+
+        <!-- Affichage des documents -->
+        <a v-else :href="preview.url" target="_blank" class="text-blue-500 underline">
+          {{ preview.file.name }}
+        </a>
+
+        <!-- Bouton de suppression -->
+        <button
+          type="button"
+          @click="removeFile(index)"
+          class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs hover:bg-red-600 transition-colors"
+        >
+          X
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch, onUnmounted } from 'vue';
+import {TassiliInput} from '@/vendor/TassiliLibs/stores/tassiliInput'
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { computed } from "vue";
+
+const props = defineProps({
+  FormKey : {
+    type :  String
+  },
+  cle : {
+    type :  String
+  },
+});
+
+const tassiliInput = TassiliInput();
+
+const smSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['sm'] || 1 
+);
+
+const mdSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['md'] || 1 
+);
+
+const lgSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['lg'] || 1 
+);
+
+const xlSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['xl'] || 1 
+);
+
+const fileInputRef = ref(null);
+const filePreviews = ref([]);
+const isDragging = ref(false);
+
+// Formats de fichiers acceptés
+const acceptedFormats = 'image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt';
+
+// Vérification si la clé contient bien un tableau
+if (!Array.isArray(tassiliInput.form[props.FormKey][props.cle]['value'])) {
+  tassiliInput.form[props.FormKey][props.cle]['value'] = [];
+}
+
+// Détecte le type de fichier pour l'affichage
+const isImage = (file) => file.type.startsWith('image/');
+const isAudio = (file) => file.type.startsWith('audio/');
+const isVideo = (file) => file.type.startsWith('video/');
+
+// Fonction pour vérifier si on peut ajouter plus de fichiers
+function canAddMoreFiles(numberOfNewFiles) {
+  const currentCount = tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs'].length;
+  const maxFiles = tassiliInput.form[props.FormKey][props.cle]['options']['maxNumberFiles'];
+  
+  if (currentCount + numberOfNewFiles > maxFiles) {
+    const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+    notyf.error(`Limit number of files is ${maxFiles}.`);
+    return false;
+  }
+  
+  return true;
+}
+
+
+// Fonction pour traiter les fichiers (commune pour click et drag&drop)
+const processFiles = (files) => {
+
+  // Vérifier d'abord si on peut ajouter ces fichiers
+  if (!canAddMoreFiles(files.length)) {
+    return; // Arrêter le traitement si la limite sera dépassée
+  }
+
+  files.forEach((file) => {
+    if (!tassiliInput.form[props.FormKey][props.cle]['value'].some(existingFile => existingFile.name === file.name)) {
+      const preview = { file, url: URL.createObjectURL(file) };
+      tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs'].push(preview);
+      tassiliInput.form[props.FormKey][props.cle]['value'].push(file);
+    }
+  });
+};
+
+// Gestion de la sélection des fichiers (click)
+const handleFileSelection = (event) => {
+  const files = Array.from(event.target.files);
+  processFiles(files);
+};
+
+// Gestion du drag over
+const handleDragOver = (event) => {
+  event.preventDefault();
+  isDragging.value = true;
+};
+
+// Gestion du drag leave
+const handleDragLeave = (event) => {
+  event.preventDefault();
+  isDragging.value = false;
+};
+
+// Gestion du drop
+const handleDrop = (event) => {
+  event.preventDefault();
+  isDragging.value = false;
+  
+  const files = Array.from(event.dataTransfer.files);
+  processFiles(files);
+};
+
+// Suppression d'un fichier
+const removeFile = (index) => {
+  URL.revokeObjectURL(tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs'][index].url);
+  tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs'].splice(index, 1);
+  tassiliInput.form[props.FormKey][props.cle]['value'].splice(index, 1);
+};
+
+// Réinitialisation automatique si les données sont vidées
+watch(() => tassiliInput.form[props.FormKey][props.cle]['value'], (newValue) => {
+  if (Array.isArray(newValue) && newValue.length === 0) {
+    tassiliInput.form[props.FormKey][props.cle]['options']['tempUrlTabs'] = [];
+    if (fileInputRef.value) {
+      fileInputRef.value.value = '';
+    }
+  }
+}, { deep: true });
+
+// Nettoyage des URLs pour éviter les fuites mémoire
+onUnmounted(() => {
+  filePreviews.value.forEach(preview => URL.revokeObjectURL(preview.url));
+});
+</script>
+
+<style lang="css" scoped>
+.boite {
+  grid-column: span v-bind(smSpan);
+}
+
+@media (min-width: 640px) { 
+  .boite {
+  grid-column: span v-bind(mdSpan);
+}
+}
+
+@media (min-width: 768px) { 
+  .boite {
+  grid-column: span v-bind(lgSpan);
+}
+}
+
+@media (min-width: 1024px) { 
+ .boite {
+  grid-column: span v-bind(xlSpan);
+}
+}
+</style>

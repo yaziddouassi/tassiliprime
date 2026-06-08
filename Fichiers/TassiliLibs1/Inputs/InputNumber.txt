@@ -1,0 +1,83 @@
+<template>
+  <div class="w-full mb-[5px]">
+     <div>
+       <span class="font-bold"> {{  tassiliInput.form[props.FormKey][props.cle]['options']['label']}}</span>
+     </div>
+     
+     <div>
+        <input class="w-full  bg-[#E8E8E8] h-[50px]
+      border-[darkblue] border-[1px] "
+         :readonly="tassiliInput.form[props.FormKey][props.cle]['options']['readOnly'] ==='yes'"
+         type="number" v-model="tassiliInput.form[props.FormKey][props.cle]['value']"
+         :min="tassiliInput.form[props.FormKey][props.cle]['options'].min !== 'infinite' ?
+                 tassiliInput.form[props.FormKey][props.cle]['options'].min : null"
+           :max="tassiliInput.form[props.FormKey][props.cle]['options'].max !== 'infinite' ? 
+                 tassiliInput.form[props.FormKey][props.cle]['options'].max : null"
+           :step="tassiliInput.form[props.FormKey][props.cle]['options'].step">
+     </div>
+    
+     <div v-if="tassiliInput.errors[FormKey]" class="text-[red]">
+        <span v-if="tassiliInput.errors[FormKey][cle]">
+            {{ tassiliInput.errors[FormKey][cle] }}
+        </span>
+     </div>
+    
+ </div>
+ </template>
+<script setup>
+import {TassiliInput} from '@/vendor/TassiliLibs/stores/tassiliInput'
+import { computed } from "vue";
+
+const props = defineProps({
+  FormKey : {
+    type :  String
+  },
+  cle : {
+    type :  String
+  },
+});
+
+
+const tassiliInput = TassiliInput();
+
+const smSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['sm'] || 1 
+);
+
+const mdSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['md'] || 1 
+);
+
+const lgSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['lg'] || 1 
+);
+
+const xlSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['xl'] || 1 
+);
+
+</script>
+
+<style lang="css" scoped>
+.boite {
+  grid-column: span v-bind(smSpan);
+}
+
+@media (min-width: 640px) { 
+  .boite {
+  grid-column: span v-bind(mdSpan);
+}
+}
+
+@media (min-width: 768px) { 
+  .boite {
+  grid-column: span v-bind(lgSpan);
+}
+}
+
+@media (min-width: 1024px) { 
+ .boite {
+  grid-column: span v-bind(xlSpan);
+}
+}
+</style>

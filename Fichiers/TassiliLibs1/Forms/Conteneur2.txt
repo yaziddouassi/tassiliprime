@@ -1,0 +1,345 @@
+<template>
+     <div v-if="permission.can(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['permissions'])">
+     
+     <WizardStep :formKey="tassiliInput.urlCustomValidation" />
+     <form @submit.prevent="submit('creer')" @keydown.enter.prevent> 
+     <div class="conteneurForm">
+      <template
+       v-for="([key, field], index) in Object.entries(tassiliInput.form[tassiliInput.urlCustomValidation])
+             .filter(([k, f]) =>
+              f.type !== 'Hidden' &&
+            (tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard']['wizardForm'][tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent']] ?? []).includes(k)
+               )" :key="key">
+       
+       <InputText v-if="field.type === 'Text'" 
+       :FormKey="tassiliInput.urlCustomValidation"  :cle="key" />
+
+       <Textarea v-if="field.type === 'Textarea'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+        <InputNumber v-if="field.type === 'Number'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <Password v-if="field.type === 'Password'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <InputSelect v-if="field.type === 'Select'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <InputDate v-if="field.type === 'Date'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <InputRadio v-if="field.type === 'Radio'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <Checkbox v-if="field.type === 'Checkbox'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <CheckboxList v-if="field.type === 'CheckboxList'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <RichEditor v-if="field.type === 'Quill'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <InputFile v-if="field.type === 'File'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+      
+       <Repeteur v-if="field.type === 'Repeater'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <Signature v-if="field.type === 'Signature'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       <MultipleFile v-if="field.type === 'MultipleFile'" 
+       :FormKey="tassiliInput.urlCustomValidation" :cle="key" />
+
+       </template>
+      </div>
+
+      <LoadAction :formKey="tassiliInput.urlCustomValidation" /> 
+
+      <div class="pt-[10px] pt-[0px] flex flex-wrap gap-[5px]">
+          <div v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] != 1)" @click="reculer()" >
+            <button class="bg-[black] min-w-[100px] text-white p-[9px] rounded-[2px]" type="button">
+              Previous
+            </button>
+          </div>
+          <div v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createOther'] == 'yes'
+             && tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] == tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardCount) ||
+             (tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createOther'] == 'yes'
+             && tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardStop.includes(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent']))">
+             <button type="button" @click="submit('other')" class="border-[1px] border-black min-w-[100px] text-black p-[9px] rounded-[2px]">
+              {{tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createOtherLabel']  }}
+            </button>
+          </div>
+          <div v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] != tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardCount)"> 
+            <button 
+            class="bg-[black] min-w-[100px] text-white p-[9px] rounded-[2px]" type="button"
+            @click="submit('next')">
+              Next
+            </button>
+          </div>  
+          <div  v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] == tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardCount) ||
+                tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardStop.includes(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'])">
+          <button class="bg-[blue] min-w-[100px] text-white p-[9px] rounded-[2px]" type="submit">
+              {{tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createLabel']  }}
+            </button>
+          </div>
+          <div v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createOther'] == 'yes'
+             && tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] == tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardCount) ||
+             (tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createOther'] == 'yes'
+             && tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizard'].wizardStop.includes(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent']))">
+             <button type="button" @click="submit('other')" class="border-[1px] border-black min-w-[100px] text-black p-[9px] rounded-[2px]">
+              {{tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createOtherLabel']  }} 
+            </button>
+          </div>
+
+
+
+          </div>
+
+         </form>
+    </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { TassiliInput } from '@/vendor/TassiliLibs/stores/tassiliInput';
+import { TassiliRoutes } from '@/vendor/TassiliLibs/stores/tassiliRoutes';
+import InputText from '../Inputs/InputText.vue';
+import Textarea from '../Inputs/Textarea.vue';
+import InputNumber from '../Inputs/InputNumber.vue';
+import Password from '../Inputs/Password.vue';
+import InputSelect from '../Inputs/InputSelect.vue';
+import InputDate from '../Inputs/InputDate.vue';
+import InputRadio from '../Inputs/InputRadio.vue';
+import Checkbox from '../Inputs/Checkbox.vue';
+import CheckboxList from '../Inputs/CheckboxList.vue';
+import RichEditor from '../Inputs/RichEditor.vue';
+import InputFile from '../Inputs/InputFile.vue';
+import MultipleFile from '../Inputs/MultipleFile.vue';
+import Signature from '../Inputs/Signature.vue';
+import Repeteur from '../Inputs/Repeteur.vue';
+import WizardStep from './WizardStep.vue';
+import { router, usePage } from '@inertiajs/vue3';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { computed } from "vue";
+import LoadAction from './LoadAction.vue';
+import { Permission } from '../stores/permission';
+
+const page = usePage();
+const permission = Permission()
+const tassiliInput = TassiliInput();
+const isSubmitting = ref(false);
+
+const smCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassiliInput?.urlCustomValidation]?.info?.grid?.sm || 1
+);
+const mdCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassiliInput?.urlCustomValidation]?.info?.grid?.md || 1
+);
+const lgCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassiliInput?.urlCustomValidation]?.info?.grid?.lg || 1
+);
+const xlCols = computed(() =>
+ tassiliInput.tassiliFormList?.[tassiliInput?.urlCustomValidation]?.info?.grid?.xl || 1
+);
+
+function reculer() {
+  tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] -= 1 
+  tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'off'
+}
+
+function nextValidate() {
+  tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] += 1 
+  tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'off'
+
+}
+
+function cleanQuillContent(html) {
+  if (typeof html !== 'string') return html;
+  return html.replace(/<p>\s*<\/p>/g, '').replace(/<p><br><\/p>/g, '').trim();
+}
+
+
+function insert(action) {
+
+  const formData = new FormData();
+
+  tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'on'
+
+  if (action == 'next') {
+    formData.append('tassiliSaveActive', 'no');
+  }
+  if (action != 'next') {
+    formData.append('tassiliSaveActive', 'yes');
+  }
+  
+  formData.append('tassiliWizardStep',tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent']);
+
+  formData.append(
+    'urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU',
+    tassiliInput.urlCustomValidation
+  );
+
+  formData.append(
+    'permissions17485RRY4R4RD9448RK48K4RFRFIRU',
+    JSON.stringify(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['permissions']) 
+  );
+
+  Object.keys(tassiliInput.form[tassiliInput.urlCustomValidation]).forEach((key) => {
+
+    const tab1 = ['MultipleFile']
+    if (tab1.includes(tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'])) {
+    if(!tassiliInput.form[tassiliInput.urlCustomValidation][key]['value'] || tassiliInput.form[tassiliInput.urlCustomValidation][key]['value'].length === 0) {
+      formData.append(key, '');
+    }
+    else if (Array.isArray(tassiliInput.form[tassiliInput.urlCustomValidation][key]['value'])) {
+      tassiliInput.form[tassiliInput.urlCustomValidation][key]['value'].forEach((file, index) => {
+        formData.append(`${key}[]`, file);
+      });
+    }
+ 
+    
+    } 
+
+
+    const tab2 = ['File'];
+    if(tab2.includes(tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'])) {
+      formData.append(key , tassiliInput.form[tassiliInput.urlCustomValidation][key]['value']);
+    }
+
+
+    const tab3 = [
+      'Text','Date','Hidden','Select','Number','Radio','Checkbox','CheckboxList','Password','Textarea'
+    ,'Signature'];
+    if (tab3.includes(tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'])) {
+      formData.append(key, tassiliInput.form[tassiliInput.urlCustomValidation][key]['value']);
+    }
+
+
+    const tab4 = ['Quill'];
+    if(tab4.includes(tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'])) {
+      formData.append(key, cleanQuillContent(tassiliInput.form[tassiliInput.urlCustomValidation][key]['value'] || ''));
+    }
+
+
+
+if (tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'] === 'Repeater' ) {
+
+   tassiliInput.form[tassiliInput.urlCustomValidation][key]['value'].forEach((item, i) => {
+    Object.entries(item).forEach(([subKey, subValue]) => {
+
+       if(tassiliInput.form[tassiliInput.urlCustomValidation][key]['fields'][subKey]['type'] === 'Quill') {
+          subValue  = cleanQuillContent(subValue || '')
+      }
+
+      formData.append(`${key}[${i}][${subKey}]`, subValue);
+
+    });
+  });
+
+
+}
+
+
+
+  });
+
+  router.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', formData, {
+    forceFormData: true,
+    onError: (errors) => {
+      tassiliInput.setError(tassiliInput.urlCustomValidation,errors);
+      tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'off'
+    },
+    onSuccess: () => {
+      
+       if (action === 'creer') {
+          tassiliInput.cancelError(tassiliInput.urlCustomValidation);
+          tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] = 1
+          tassiliInput.form[tassiliInput.urlCustomValidation] = JSON.parse(JSON.stringify(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['fields']))
+          const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+          notyf.success(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createMessage']);
+          tassiliInput.customActionModal = false;
+          tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'off'
+
+          if(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['routeSession'] != '') {
+             const tassiliroutes = TassiliRoutes();
+             tassiliroutes.visit(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['routeSessionData']['panel'],
+             tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['routeSessionData']['model'],
+             tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['routeSessionData']['url']);
+             return;
+          }
+
+          if(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['route'] != '') {
+             router.visit(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['route'])
+             return;
+          }
+
+      } else if (action === 'other') {
+          tassiliInput.cancelError(tassiliInput.urlCustomValidation);
+          tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] = 1
+          tassiliInput.form[tassiliInput.urlCustomValidation] = JSON.parse(JSON.stringify(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['fields']))
+          const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
+          notyf.success(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['createMessage']);
+          tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'off'
+      }
+     else if (action === 'next') {
+        nextValidate();
+      }
+    
+    },
+  });
+}
+
+
+function submit(action) {
+   insert(action);
+  }
+
+</script>
+
+<style lang="css" scoped>
+.conteneurForm {
+    display: grid;
+    grid-template-columns: repeat(v-bind(smCols), 1fr);
+    gap: 10px;
+  }
+
+@media (min-width: 640px) { 
+  .conteneurForm {
+    display: grid;
+    grid-template-columns: repeat(v-bind(mdCols), 1fr);
+  }
+}
+
+@media (min-width: 768px) { 
+  .conteneurForm {
+    display: grid;
+    grid-template-columns: repeat(v-bind(lgCols), 1fr);
+  }
+}
+
+@media (min-width: 1024px) { 
+  .conteneurForm {
+   display: grid;
+   grid-template-columns: repeat(v-bind(xlCols), 1fr);
+  
+  }
+}
+.loader {
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

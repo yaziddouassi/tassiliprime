@@ -1,0 +1,41 @@
+<template>
+    <div class="flex w-full justify-between p-[5px]">
+            <div> 
+                <button class="bg-[darkblue] w-[100px] text-white p-[9px] rounded-[2px]">
+                New
+               </button>
+            </div>
+            <div>
+              <Link :href="currentRoute" >
+            <button class="bg-[black] min-w-[100px] text-white p-[9px] rounded-[2px]">
+              {{ page.props.pageSettings.modelLabel }}
+              </button>
+            </Link>
+            </div>
+        </div>
+
+        <div class="p-[10px] text-[24px] font-bold">
+         {{ page.props.pageSettings.modelTitle }}
+         <span class="text-[darkblue]">>></span> 
+        </div>
+</template>
+
+<script setup>
+
+import { Link } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
+import { TassiliRoutes } from '@/vendor/TassiliLibs/stores/tassiliRoutes'
+
+const page = usePage();
+
+const tassiliroutes  = TassiliRoutes();
+
+let currentRoute = tassiliroutes.routes.find(item => item.model === page.props.pageSettings.modelClassName)?.route;
+if(currentRoute == undefined) {
+  currentRoute = page.props.pageSettings.routeListe
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>

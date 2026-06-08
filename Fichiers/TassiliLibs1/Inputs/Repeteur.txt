@@ -1,0 +1,302 @@
+<template>
+  <div class="boite w-full mb-[5px]">
+    <div class="mb-[2px]">
+      <span class="font-bold">
+        {{ tassiliInput.form[props.FormKey][props.cle]['options']['label'] }}
+      </span>
+    </div>
+
+    <div
+      v-for="(value, index) in tassiliInput.form[props.FormKey][props.cle]['value']"
+      :key="index"
+      class="p-[5px] border-[1px] border-[#555] mb-[10px] rounded-[5px]"
+      :draggable="tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'yes'"
+      @dragstart="handleDragStart(index)"
+      @dragover.prevent
+      @dragenter="handleDragEnter(index)"
+      @dragleave="handleDragLeave(index)"
+      @drop="handleDrop(index)"
+      :class="{ 'bg-blue-100': dragOverIndex === index }"
+    >
+      <div class="grid grid-cols-2 mb-2"
+       v-if="tassiliInput.form[props.FormKey][props.cle]['options']['readOnly'] ==='no'">
+        <div class="flex gap-2 items-center">
+         <span class="material-icons"
+          v-if="tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'yes'">
+                        arrow_upward
+                </span>
+                 <span class="material-icons"
+          v-if="tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'yes'">
+                      arrow_downward
+                    </span>
+        </div>
+        <div class="text-right">
+          <span v-if="tassiliInput.form[props.FormKey][props.cle]['removeLine'] === 'yes'"
+            class="material-icons text-[red] cursor-pointer"
+            @click="removeKey(index)"
+          >
+            delete
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="boiteConteneur gap-4 mb-4">
+        <template v-for="(value2, key2) in value" :key="key2">
+          <InputText
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Text'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+          <CheckboxList
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'CheckboxList'"
+            :FormKey="props.FormKey" 
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+           <Checkbox
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Checkbox'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+          <InputDate
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Date'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+          <InputNumber
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Number'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+          <InputRadio
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Radio'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+          <InputSelect
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Select'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+          <Textarea
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Textarea'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+          <RichEditor
+            v-if="tassiliInput.form[props.FormKey][props.cle]['fields'][key2]['type'] === 'Quill'"
+            :FormKey="props.FormKey"
+            :cle="props.cle"
+            :cle2="index"
+            :cle3="key2"
+          />
+
+
+          
+        </template>
+      </div>
+    </div>
+
+    <div v-if="tassiliInput.errors[FormKey]" class="text-[red]">
+        <span v-if="tassiliInput.errors[FormKey][cle]">
+            {{ tassiliInput.errors[FormKey][cle] }}
+        </span>
+    </div>
+
+    <div v-if="tassiliInput.form[props.FormKey][props.cle]['options']['readOnly'] ==='no'"
+      class="p-[8px] text-center font-bold border-[2px] border-[#555] rounded-[5px] cursor-pointer"
+      @click="addLine()"
+    >
+      addLine
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { TassiliInput } from '@/vendor/TassiliLibs/stores/tassiliInput'
+import InputText from '../Repeteur/InputText.vue'
+import CheckboxList from '../Repeteur/CheckboxList.vue'
+import Checkbox from '../Repeteur/Checkbox.vue'
+import InputDate from '../Repeteur/InputDate.vue'
+import InputNumber from '../Repeteur/InputNumber.vue'
+import InputRadio from '../Repeteur/InputRadio.vue'
+import InputSelect from '../Repeteur/InputSelect.vue'
+import Textarea from '../Repeteur/Textarea.vue'
+import RichEditor from '../Repeteur/RichEditor.vue'
+import { computed } from "vue";
+
+const props = defineProps({
+  FormKey : {
+    type :  String
+  },
+  cle: {
+    type: String,
+  },
+})
+
+const tassiliInput = TassiliInput()
+
+const smSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['sm'] || 1 
+);
+
+const mdSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['md'] || 1 
+);
+
+const lgSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['lg'] || 1 
+);
+
+const xlSpan = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['colSpan']?.['xl'] || 1 
+);
+
+const smGrid = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['grid']?.['sm'] || 1 
+);
+
+const mdGrid = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['grid']?.['md'] || 1 
+);
+
+const lgGrid = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['grid']?.['lg'] || 1 
+);
+
+const xlGrid = computed(() =>
+tassiliInput.form?.[props.FormKey]?.[props.cle]?.['options']?.['grid']?.['xl'] || 1 
+);
+
+function addLine() {
+  tassiliInput.form[props.FormKey][props.cle]['value'].push(
+    JSON.parse(JSON.stringify(tassiliInput.form[props.FormKey][props.cle]['schemaFields']))
+  )
+}
+
+function removeKey(index) {
+  tassiliInput.form[props.FormKey][props.cle]['value'].splice(index, 1)
+}
+
+// DRAG & DROP LOGIC
+const dragStartIndex = ref(null)
+const dragOverIndex = ref(null)
+
+function handleDragStart(index) {
+
+  if(tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'no') {
+    return;
+  }
+  dragStartIndex.value = index
+}
+
+function handleDragEnter(index) {
+  if(tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'no') {
+    return;
+  }
+  dragOverIndex.value = index
+}
+
+function handleDragLeave(index) {
+  if(tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'no') {
+    return;
+  }
+  if (dragOverIndex.value === index) {
+    dragOverIndex.value = null
+  }
+}
+
+function handleDrop(index) {
+  if(tassiliInput.form[props.FormKey][props.cle]['draggable'] === 'no') {
+    return;
+  }
+  const start = dragStartIndex.value
+  const end = index
+  const list = tassiliInput.form[props.FormKey][props.cle]['value']
+
+  if (start !== null && end !== null && start !== end) {
+    const item = list[start]
+    list.splice(start, 1)
+    list.splice(end, 0, item)
+  }
+
+  dragStartIndex.value = null
+  dragOverIndex.value = null
+}
+</script>
+
+<style lang="css" scoped>
+.boite {
+  grid-column: span v-bind(smSpan);
+}
+
+.boiteConteneur{
+    display: grid;
+    grid-template-columns: repeat(v-bind(smGrid), 1fr);
+    column-gap : 5px ;
+    row-gap : 5px;
+}
+
+@media (min-width: 640px) { 
+  .boite {
+  grid-column: span v-bind(mdSpan);
+}
+
+.boiteConteneur{
+    display: grid;
+    grid-template-columns: repeat(v-bind(mdGrid), 1fr);
+    column-gap : 5px ;
+    row-gap : 5px;
+}
+}
+
+@media (min-width: 768px) { 
+  .boite {
+  grid-column: span v-bind(lgSpan);
+}
+
+.boiteConteneur{
+    display: grid;
+    grid-template-columns: repeat(v-bind(lgGrid), 1fr);
+    column-gap : 5px ;
+    row-gap : 5px;
+}
+}
+
+@media (min-width: 1024px) { 
+ .boite {
+  grid-column: span v-bind(xlSpan);
+}
+.boiteConteneur{
+    display: grid;
+    grid-template-columns: repeat(v-bind(xlGrid), 1fr);
+    column-gap : 5px ;
+    row-gap : 5px;
+}
+
+}
+</style>

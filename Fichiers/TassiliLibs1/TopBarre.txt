@@ -1,0 +1,41 @@
+<template>
+    
+    <div class="max-[799px]:hidden pt-[2px] pl-[2px] pr-[2px] ">
+
+<div class="h-[60px] bg-[#ddd] text-white grid grid-cols-3">
+     
+   <div class="bg-[greee] text-[darkblue] flex pl-[5px] pt-[12px] text-[20px]">
+      <span class="material-icons text-[30px] pt-[2px]" style="display:block">
+         account_circle
+         </span>
+         <span style="display:block" class="capitalize">
+            &nbsp; {{ page.props.tassiliSettings.user.name }}
+         </span>
+     
+     </div>
+
+     <div class="text-center text-[darkblue] text-[20px] font-bold pt-[14px]">
+           {{ page.props.tassiliSettings.company}}
+     </div>
+
+   <div class="text-right pt-[8px] pr-[4px]">
+      
+      <button class="border-[1px] border-[darkblue] text-[darkblue]  min-w-[80px] rounded-[3px] p-[7px] text-[20px] capitalize">
+         {{ page.props.tassiliSettings.tassiliPanel}} 
+      </button>
+   </div>
+</div> 
+</div>
+
+</template>
+
+<script setup>
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage()
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>
