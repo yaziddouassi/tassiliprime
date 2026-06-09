@@ -1,125 +1,144 @@
 <?php
 
-namespace  Tassili\Prime\Commands;
+namespace Tassili\Prime\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\User; // Ensure you import the User model
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Tassili\Prime\Utils\TransformString;
 use Tassili\Prime\Utils\WizardPart;
 
 class WizardCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'make:wizard';
+    protected $description = 'Create Crud (v2)';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create Wizard';
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle()
     {
-       
-
+        // ── 1. Choisir le panel ───────────────────────────────────────────
         $panelList = config('tassili.panelList', []);
-
-        // Vérifier s’il y a des modèles
         if (empty($panelList)) {
             $this->error("No panel in config('tassili.panelList').");
             return 1;
         }
-
-        // Demander à l’utilisateur de choisir
         $panel = $this->choice('Choose a panel ?', $panelList, 0);
+        $this->info("You chose panel : $panel");
 
-        $this->info("You Choose this panel : $panel");
-
-
-
+        // ── 2. Choisir le model ───────────────────────────────────────────
         $modelList = config('tassili.modelList', []);
-
-        // Vérifier s’il y a des modèles
         if (empty($modelList)) {
             $this->error("No model in config('tassili.modelList').");
             return 1;
         }
+        $model = $this->choice('Choose a model ?', $modelList, 0);
+        $this->info("You chose model : $model");
 
-        // Demander à l’utilisateur de choisir
-        $choix = $this->choice('Choose a model ?', $modelList, 0);
+        // ── 3. Calcul des variables ───────────────────────────────────────
+        $transform   = new TransformString();
+        $modelLabel  = $transform->transformLink($model);   // ex: "Posts"
+        $modelUrl    = $transform->transformUrl($model);    // ex: "posts"
+        $panelCamel  = ucfirst($panel);                     // ex: "Admin"
 
-        $this->info("You Choose this model : $choix");
+        // ── 4. Vérification que le panel existe ───────────────────────────
+        $panelDir = base_path("app/Http/Controllers/Tassili/{$panelCamel}");
+        if (!File::exists($panelDir)) {
+            $this->error("❌ This panel doesn't exist.");
+            return 1;
+        }
 
+        // ── 5. Vérification que le CRUD n'existe pas déjà ─────────────────
+        $crudDir = base_path("app/Http/Controllers/Tassili/{$panelCamel}/Crud/{$model}");
+        if (File::exists($crudDir)) {
+            $this->error("❌ CRUD already exists.");
+            return 1;
+        }
 
-        $transform = new TransformString();
+        // ── 6. Création des dossiers ──────────────────────────────────────
+        $dirs = [
+            $crudDir,
+            "{$crudDir}/Customs",
+            "{$crudDir}/Forms",
+            "{$crudDir}/Listings/Filters",
+            "{$crudDir}/Listings/Bulks",
+            "{$crudDir}/Listings/ModalForms",
+        ];
+        foreach ($dirs as $dir) {
+            File::makeDirectory($dir, 0755, true);
+        }
+
+        // ── 7. Génération des fichiers ────────────────────────────────────
         $crudPart = new WizardPart();
 
-        $modelLink = $transform->transformLink($choix);
-        $modelUrl = $transform->transformUrl($choix);
+        // Controllers principaux
+        File::put("{$crudDir}/CreatorController.php",
+            $crudPart->getCreatorController($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        $panelCamel = ucfirst($panel);
+        File::put("{$crudDir}/UpdatorController.php",
+            $crudPart->getUpdatorController($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        $piece1 = $crudPart->getPiece1($choix, $modelLink, $modelUrl,$panel,$panelCamel);
-        $piece2 = $crudPart->getPiece2($choix, $modelLink, $modelUrl,$panel,$panelCamel);
-        $piece3 = $crudPart->getPiece3($choix, $modelLink, $modelUrl,$panel,$panelCamel);
-        $piece4 = $crudPart->getPiece4($choix, $modelLink, $modelUrl,$panel,$panelCamel);
+        File::put("{$crudDir}/ListingController.php",
+            $crudPart->getListingController($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        $bigDossier = base_path("app/Http/Controllers/Tassili/{$panelCamel}");
+        // Custom
+        File::put("{$crudDir}/Customs/Custom1Controller.php",
+            $crudPart->getCustom1Controller($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        if (!File::exists($bigDossier)) {
-            $this->error('❌ This panel dont exist.');
-            return;
-        }
+        // Forms
+        File::put("{$crudDir}/Forms/{$model}CreatorForm.php",
+            $crudPart->getCreatorForm($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        $dossier = base_path("app/Http/Controllers/Tassili/{$panelCamel}/Crud/{$choix}");
-        $custom = "{$dossier}/Customs";
+        File::put("{$crudDir}/Forms/{$model}UpdatorForm.php",
+            $crudPart->getUpdatorForm($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        if (File::exists($dossier)) {
-            $this->error('❌ CRUD already exists.');
-            return;
-        }
+        // Listings
+        File::put("{$crudDir}/Listings/Filters/Filter.php",
+            $crudPart->getListingFilter($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        File::makeDirectory($dossier, 0755, true);
-        File::makeDirectory($custom, 0755, true);
+        File::put("{$crudDir}/Listings/Bulks/Bulk.php",
+            $crudPart->getListingBulk($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        File::put("{$dossier}/CreatorController.php", $piece1);
-        File::put("{$dossier}/UpdatorController.php", $piece2);
-        File::put("{$dossier}/ListingController.php", $piece3);
-        File::put("{$custom}/Custom1Controller.php", $piece4);
+        File::put("{$crudDir}/Listings/ModalForms/Modal.php",
+            $crudPart->getListingModal($model, $modelLabel, $modelUrl, $panel, $panelCamel));
 
-        $crud = new \Tassili\Prime\Models\TassiliCrud() ;
-        $crud->panel = $panel;
-        $crud->model = $choix;
-        $crud->label = $modelLink;
-        $crud->route = '/'.$panel.'/' . $modelUrl;
-        $crud->icon = 'description';
+        // ── 8. Enregistrement en base ─────────────────────────────────────
+        $crud = new \Tassili\Prime\Models\TassiliCrud();
+        $crud->panel  = $panel;
+        $crud->model  = $model;
+        $crud->label  = $modelLabel;
+        $crud->route  = '/' . $panel . '/' . $modelUrl;
+        $crud->icon   = 'description';
         $crud->active = true;
         $crud->save();
 
-
-        $vueTarget = base_path("resources/js/Pages/TassiliPages/{$panelCamel}/Crud/{$choix}");
+        // ── 9. Copie des fichiers Vue ─────────────────────────────────────
+        $vueTarget = base_path("resources/js/Pages/TassiliPages/{$panelCamel}/Crud/{$model}");
         File::copyDirectory(base_path('vendor/tassili/prime/Fichiers/WizardFiles'), $vueTarget);
 
         foreach (File::allFiles($vueTarget) as $file) {
             if ($file->getExtension() === 'txt') {
-                File::move($file->getPathname(), $file->getPath() . '/' . str_replace('.txt', '.vue', $file->getFilename()));
+                File::move(
+                    $file->getPathname(),
+                    $file->getPath() . '/' . str_replace('.txt', '.vue', $file->getFilename())
+                );
             }
         }
 
+        $this->info("✅ CRUD {$model} created successfully !");
+        $this->table(
+            ['Type', 'File'],
+            [
+                ['Controller', "Crud/{$model}/CreatorController.php"],
+                ['Controller', "Crud/{$model}/UpdatorController.php"],
+                ['Controller', "Crud/{$model}/ListingController.php"],
+                ['Controller', "Crud/{$model}/Customs/Custom1Controller.php"],
+                ['Form',       "Crud/{$model}/Forms/{$model}CreatorForm.php"],
+                ['Form',       "Crud/{$model}/Forms/{$model}UpdatorForm.php"],
+                ['Listing',    "Crud/{$model}/Listings/Filters/Filter.php"],
+                ['Listing',    "Crud/{$model}/Listings/Bulks/Bulk.php"],
+                ['Listing',    "Crud/{$model}/Listings/ModalForms/Modal.php"],
+                ['Vue',        "TassiliPages/{$panelCamel}/Crud/{$model}/*.vue"],
+            ]
+        );
 
-        $this->info("✅ Wizard {$choix} created with success !");
-
+        return 0;
     }
 }

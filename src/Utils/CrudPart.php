@@ -1,21 +1,20 @@
 <?php
 
 namespace Tassili\Prime\Utils;
+
 use Illuminate\Support\Str;
 
 class CrudPart
 {
-   public $piece1;
-   public $piece2;
-   public $piece3;
-   public $piece4;
+    // ══════════════════════════════════════════════════════════════════════
+    // CONTROLLERS PRINCIPAUX
+    // ══════════════════════════════════════════════════════════════════════
 
-public function getPiece1($a,$b,$c,$panel,$panelCamel) {
+    public function getCreatorController($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
 
-
-    $this->piece1 = "<?php
-
-namespace App\Http\Controllers\Tassili\\$panelCamel\Crud\\$a;
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,73 +24,58 @@ use Spatie\RouteAttributes\Attributes\Post;
 use Tassili\Prime\Http\Resources\TassiliForm;
 use Tassili\Prime\Fields\TextInput;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms\\{$a}CreatorForm;
 
 class CreatorController extends Controller
 {
-   
     private TassiliForm \$tassili;
-    private array \$pageSettings = [] ;
-    private string \$modelClass = 'App\Models\\$a';
-    private string \$tassiliPanel = '$panel' ;
-  
+    private array \$pageSettings = [];
+    private string \$modelClass = 'App\Models\\{$a}';
+    private string \$tassiliPanel = '{$panel}';
 
-     public function __construct()
+    public function __construct()
     {
         \$this->tassili = new TassiliForm([
-            'tassiliPanel' => \$this->tassiliPanel]);
+            'tassiliPanel' => \$this->tassiliPanel,
+        ]);
         \$this->pageSettings = [
-        'modelClass' => \$this->modelClass,
-        'modelClassName' => '$a',
-        'modelLabel' => '$b',
-        'modelTitle' => 'Create $b',
-        'routeListe' => '/$panel/$c',
-        'urlCreate' => '/$panel/$c/create',
-        'validationUrl' => '/$panel/$c/create/validation'] ;
-         \$this->initTassili();
+            'modelClass'     => \$this->modelClass,
+            'modelClassName' => '{$a}',
+            'modelLabel'     => '{$b}',
+            'modelTitle'     => 'Create {$b}',
+            'routeListe'     => '/{$panel}/{$c}',
+            'urlCreate'      => '/{$panel}/{$c}/create',
+            'className'      => '\App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms\\{$a}CreatorForm',
+            'action'         => 'create',
+        ];
     }
 
-
-     public function initTassili()
+    public function initTassili(Request \$request): void
     {
-        \$this->tassili->addForm([
-            'url' => \$this->pageSettings['validationUrl'],
-        ])->form([
-            TextInput::make('name')
-        ])->redirectToList(\$this->tassiliPanel,\$this->pageSettings['modelClassName']);
+        new {$a}CreatorForm(\$this->tassili, \$request);
     }
 
-    #[Post('$panel/$c/create/validation', middleware: ['tassili.auth'])]
-    public function create(Request \$request)
-    {
-        \$request->validate(['name' => ['required']]);
-
-        \$this->tassili->record = new \$this->modelClass ;
-
-        \$this->tassili->createRecord(\$request);
-        \$this->tassili->record->save();  
-    }
-
-    #[Get('$panel/$c/create', middleware: ['tassili.auth'])]
+    #[Get('{$panel}/{$c}/create', middleware: ['tassili.auth'])]
     public function index(Request \$request)
     {
-        return Inertia::render('TassiliPages/$panelCamel/Crud/$a/Creator',[
+        \$this->initTassili(\$request);
+
+        return Inertia::render('TassiliPages/{$panelCamel}/Crud/{$a}/Creator', [
             'tassiliSettings' => \$this->tassili->getInertiaData(),
-            'pageSettings' => \$this->pageSettings]);
+            'pageSettings'    => \$this->pageSettings,
+        ]);
     }
-    
-
 }
-    ";
+";
+    }
 
-    return $this->piece1;
-   }
+    // ──────────────────────────────────────────────────────────────────────
 
+    public function getUpdatorController($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
 
-
-   public function getPiece2($a,$b,$c,$panel,$panelCamel) {
-          $this->piece2 = "<?php
-
-namespace App\Http\Controllers\Tassili\\$panelCamel\Crud\\$a;
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a};
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -101,78 +85,60 @@ use Spatie\RouteAttributes\Attributes\Post;
 use Tassili\Prime\Http\Resources\TassiliForm;
 use Tassili\Prime\Fields\TextInput;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms\\{$a}UpdatorForm;
 
 class UpdatorController extends Controller
 {
     private TassiliForm \$tassili;
-    private array \$pageSettings = [] ;
-    private string \$modelClass = 'App\Models\\$a';
-    private string \$tassiliPanel = '$panel' ;
+    private array \$pageSettings = [];
+    private string \$modelClass = 'App\Models\\{$a}';
+    private string \$tassiliPanel = '{$panel}';
 
-     public function __construct()
+    public function __construct()
     {
         \$this->tassili = new TassiliForm([
-            'tassiliPanel' => \$this->tassiliPanel]);
+            'tassiliPanel' => \$this->tassiliPanel,
+        ]);
         \$this->pageSettings = [
-        'modelClass' => \$this->modelClass,   
-        'modelClassName' => '$a',
-        'modelLabel' => '$b',
-        'modelTitle' => 'Update $b',
-        'routeListe' => '/$panel/$c',
-        'urlCreate' => '/$panel/$c/create',
-        'validationUrl' => '/$panel/$c/updator/validation'] ;
-        \$this->initTassili();
+            'modelClass'     => \$this->modelClass,
+            'modelClassName' => '{$a}',
+            'modelLabel'     => '{$b}',
+            'modelTitle'     => 'Update {$b}',
+            'routeListe'     => '/{$panel}/{$c}',
+            'urlCreate'      => '/{$panel}/{$c}/create',
+            'className'      => '\App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms\\{$a}UpdatorForm',
+            'action'         => 'create',
+        ];
     }
 
-     
-    public function initTassili()
+    public function initTassili(Request \$request): void
     {
-        \$this->tassili->addForm([
-            'url' => \$this->pageSettings['validationUrl'],
-        ])->form([
-            TextInput::make('name'),
-        ])->redirectToList(\$this->tassiliPanel,\$this->pageSettings['modelClassName']);
+        new {$a}UpdatorForm(\$this->tassili, \$request);
     }
 
-    #[Post('$panel/$c/updator/validation', middleware: ['tassili.auth'])]
-    public function update(Request \$request)
-    {
-        \$request->validate(['name' => ['required']]);
-
-        \$this->tassili->record = \$this->modelClass::find(\$request->id);
-
-        if (\$this->tassili->record !== null) {
-                 \$this->tassili->updateRecord(\$request);
-                 \$this->tassili->record->save();
-            }
-
-    }
-
-    #[Get('$panel/$c/update/{id}', middleware: ['tassili.auth'])]
+    #[Get('{$panel}/{$c}/update/{id}', middleware: ['tassili.auth'])]
     public function index(Request \$request)
     {
         \$record = \$this->modelClass::findOrFail(\$request->id);
-        
-        return Inertia::render('TassiliPages/$panelCamel/Crud/$a/Updator', [
+        \$this->initTassili(\$request);
+
+        return Inertia::render('TassiliPages/{$panelCamel}/Crud/{$a}/Updator', [
             'tassiliSettings' => \$this->tassili->getInertiaData(),
-            'pageSettings' => \$this->pageSettings ,
-            'record' => \$record]);
+            'pageSettings'    => \$this->pageSettings,
+            'record'          => \$record,
+        ]);
     }
-    
 }
+";
+    }
 
-          ";
+    // ──────────────────────────────────────────────────────────────────────
 
-          return $this->piece2;
-   }
+    public function getListingController($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
 
-
-   
-   public function getPiece3($a,$b,$c,$panel,$panelCamel) {
-
-      $this->piece3 = "<?php
-
-namespace App\Http\Controllers\Tassili\\$panelCamel\Crud\\$a;
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a};
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -183,138 +149,89 @@ use Tassili\Prime\Http\Resources\ListingUtility;
 use Tassili\Prime\Fields\TextInput;
 use Tassili\Prime\Fields\Repeater;
 use Tassili\Prime\Filters\FilterText;
+use App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\Filters\Filter;
+use App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\Bulks\Bulk;
+use App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\ModalForms\Modal;
 
 class ListingController extends Controller
 {
-    
-    private string \$modelClass = 'App\Models\\$a';
+    private string \$modelClass = 'App\Models\\{$a}';
     private ListingUtility \$utility;
-    private string \$tassiliPanel = '$panel' ;
+    private string \$tassiliPanel = '{$panel}';
 
     public function __construct(Request \$request)
     {
         \$this->utility = new ListingUtility([
-            'tassiliPanel' => \$this->tassiliPanel,
-            'tassiliDataModelLabel' => '$b',
-            'tassiliDataModelTitle' => 'Create $b',
-            'tassiliDataRouteListe' => '/$panel/$c',
-            'tassiliDataUrlCreate' => '/$panel/$c/create',
-            'tassiliModelClass' => \$this->modelClass,
-            'tassiliModelClassName' => '$a',
-            'paginationPerPageList' => [10, 20, 30, 40, 50],
-            'orderByFieldList' => ['id'],
-            'orderDirectionList' => ['asc', 'desc'],
-            'urlDelete' => '/$panel/$c/delete',
+            'tassiliPanel'           => \$this->tassiliPanel,
+            'tassiliDataModelLabel'  => '{$b}',
+            'tassiliDataModelTitle'  => 'Create {$b}',
+            'tassiliDataRouteListe'  => '/{$panel}/{$c}',
+            'tassiliDataUrlCreate'   => '/{$panel}/{$c}/create',
+            'tassiliModelClass'      => \$this->modelClass,
+            'tassiliModelClassName'  => '{$a}',
+            'paginationPerPageList'  => [10, 20, 30, 40, 50],
+            'orderByFieldList'       => ['id'],
+            'orderDirectionList'     => ['asc', 'desc'],
+            'urlDelete'              => '/{$panel}/{$c}/listings/delete_by_id',
+            'showDelete'             => true,
+            'showEdit'               => true,
+            'permissionsToDeleteById'=> [],
+            'permissionsToUpdateById'=> [],
         ]);
 
-        \$this->initFilter();
-        \$this->initBulk();
-        \$this->initModalForm();
+        \$this->initTassili();
     }
 
-
-     private function initFilter()
+    private function initTassili(): void
     {
-        \$this->utility->filterList([
-            FilterText::make('name'),
-        ]);
+        new Filter(\$this->utility);
+        new Bulk(\$this->utility);
+        new Modal(\$this->utility);
     }
-
-     private function initBulk(): void
-    {
-        \$this->utility->addBulk([
-                    'label' => 'Ajouter',
-                    'icon' => 'description',
-                    'class' => 'text-white',
-                    'url' =>'/$panel/$c/bulk1' ,
-                    'confirmation' => 'Are you sure to change records',
-                    'message' => 'Records changed',
-        ]);
-    }
-
-     private function initModalForm(): void
-    {
-       \$this->utility->addModalForm([
-            'url' => '/$panel/$c/modal1',
-            'icon' => 'edit',
-            'text' => 'Qte',
-            'class' => 'text-white',
-            'confirm' => 'Are you sure to change record?',
-        ])->form([
-            TextInput::make('name')
-        ]);
-    }
-    
 
     private function initQuery(\$query, Request \$request): void
     {
         if (\$request->filled('name')) {
-           // \$query->where('name', \$request->name);
+            // \$query->where('name', \$request->name);
         }
     }
 
-    #[Post('$panel/$c/bulk1', middleware: ['tassili.auth'])]
-    public function bulk1(Request \$request)
+    #[Post('{$panel}/{$c}/listings/delete_by_id', middleware: ['tassili.auth'])]
+    public function deleteById(Request \$request)
     {
-        \$this->modelClass::whereIn('id', \$request->actionIds)->update([
-            'name' => 'rob',
-        ]);
+        \$request->model::destroy(\$request->id);
     }
 
-     #[Post('$panel/$c/modal1', middleware: ['tassili.auth'])]
-    public function modal1(Request \$request)
-    {
-        \$request->validate(['name' => ['required']]);
-        \$this->utility->record = \$this->modelClass::find(\$request->id);
-
-        if (\$this->utility->record !== null) {
-            \$this->utility->updateRecord(\$request);
-            \$this->utility->record->save();
-            }
-
-    }
-
-
-    #[Post('$panel/$c/delete', middleware: ['tassili.auth'])]
-    public function delete(Request \$request)
-    {
-        \$this->modelClass::destroy(\$request->id);
-    }
-
-  
-    #[Get('$panel/$c', middleware: ['tassili.auth'])]
+    #[Get('{$panel}/{$c}', middleware: ['tassili.auth'])]
     public function index(Request \$request)
     {
         \$this->utility->initializeQuery(
-        \$this->modelClass,\$request,fn(\$query, \$req) => \$this->initQuery(\$query, \$req));
+            \$this->modelClass,
+            \$request,
+            fn(\$query, \$req) => \$this->initQuery(\$query, \$req)
+        );
         \$data = \$this->utility->getInertiaData();
         \$data['sessionFilter'] = [/*'search','orderByField','orderDirection','paginationPerPage'*/];
 
-        return Inertia::render('TassiliPages/$panelCamel/Crud/$a/Listing',[
-                 'tassiliSettings' => \$data]);
+        return Inertia::render('TassiliPages/{$panelCamel}/Crud/{$a}/Listing', [
+            'tassiliSettings' => \$data,
+        ]);
     }
-    
 }
 ";
+    }
 
-      return $this->piece3;
-      }
+    // ──────────────────────────────────────────────────────────────────────
 
+    public function getCustom1Controller($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
 
-
-    public function getPiece4($a,$b,$c,$panel,$panelCamel) {
-
-         $this->piece4 = "<?php
-
-namespace App\Http\Controllers\Tassili\\$panelCamel\Crud\\$a\Customs;
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Customs;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
-use Inertia\Response;
 use Spatie\RouteAttributes\Attributes\Get;
 use Spatie\RouteAttributes\Attributes\Post;
 use Tassili\Prime\Http\Resources\TassiliForm;
@@ -322,35 +239,298 @@ use Tassili\Prime\Http\Resources\TassiliForm;
 class Custom1Controller extends Controller
 {
     private TassiliForm \$tassili;
-    private string \$tassiliPanel = '$panel' ;
-    
+    private string \$tassiliPanel = '{$panel}';
+
     public function __construct()
     {
-
-       config(['inertia.ssr.enabled' => false]); // SSR desactivated
-       \$this->tassili = new TassiliForm([
-          'tassiliPanel' => \$this->tassiliPanel]);
-       \$this->initTassili();
-    } 
-    
-    public function initTassili()
-    {
-     
+        config(['inertia.ssr.enabled' => false]); // SSR desactivated
+        \$this->tassili = new TassiliForm([
+            'tassiliPanel' => \$this->tassiliPanel,
+        ]);
     }
 
-    #[Get('$panel/$c/customs/page1',middleware : ['tassili.auth'])]
+    public function initTassili(\$request): void
+    {
+        //
+    }
+
+    #[Get('{$panel}/{$c}/customs/page1', middleware: ['tassili.auth'])]
     public function index(Request \$request)
     {
-        return Inertia::render('TassiliPages/$panelCamel/Crud/$a/Customs/Custom1',[
-                'tassiliSettings' =>  \$this->tassili->getInertiaData()]);
-    }
+        \$this->initTassili(\$request);
 
+        return Inertia::render('TassiliPages/{$panelCamel}/Crud/{$a}/Customs/Custom1', [
+            'tassiliSettings' => \$this->tassili->getInertiaData(),
+        ]);
+    }
 }
-         
-         ";
-
-    return $this->piece4;
-
+";
     }
 
+    // ══════════════════════════════════════════════════════════════════════
+    // FORMS
+    // ══════════════════════════════════════════════════════════════════════
+
+    public function getCreatorForm($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
+
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms;
+
+use Illuminate\Http\Request;
+use Tassili\Prime\Http\Resources\TassiliForm;
+use App\Http\Controllers\Controller;
+use Tassili\Prime\Fields\TextInput;
+use Spatie\RouteAttributes\Attributes\Post;
+
+class {$a}CreatorForm
+{
+    public TassiliForm \$tassili;
+    public \$model = '\App\Models\\{$a}';
+
+    public function __construct(TassiliForm \$tassili, Request \$request)
+    {
+        \$this->tassili = \$tassili;
+        \$this->register(\$request, []);
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function register(\$request, array \$options): void
+    {
+        \$this->tassili->addForm([
+            'className'   => '\App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms\\{$a}CreatorForm',
+            'action'      => 'create',
+            'permissions' => [],
+        ])->form([
+            TextInput::make('name'),
+        ])->redirectToList('{$panel}', '{$a}');
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function create(Request \$request)
+    {
+        \$request->validate(['name' => ['required']]);
+        \$this->tassili->record = new \$this->model;
+        \$this->tassili->createRecord(\$request);
+        \$this->tassili->record->save();
+    }
+}
+";
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+
+    public function getUpdatorForm($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
+
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms;
+
+use Illuminate\Http\Request;
+use Tassili\Prime\Http\Resources\TassiliForm;
+use App\Http\Controllers\Controller;
+use Tassili\Prime\Fields\TextInput;
+use Spatie\RouteAttributes\Attributes\Post;
+
+class {$a}UpdatorForm
+{
+    public TassiliForm \$tassili;
+    public \$model = '\App\Models\\{$a}';
+
+    public function __construct(TassiliForm \$tassili, Request \$request)
+    {
+        \$this->tassili = \$tassili;
+        \$this->register(\$request, []);
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function register(\$request, array \$options): void
+    {
+        \$this->tassili->addForm([
+            'className'   => '\App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Forms\\{$a}UpdatorForm',
+            'action'      => 'create',
+            'permissions' => [],
+        ])->form([
+            TextInput::make('name'),
+        ])->showUpdateAndStay()
+          ->redirectToList('{$panel}', '{$a}');
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function create(Request \$request)
+    {
+        \$request->validate(['name' => ['required']]);
+        \$this->tassili->record = \$this->model::find(\$request->id);
+
+        if (\$this->tassili->record !== null) {
+            \$this->tassili->updateRecord(\$request);
+            \$this->tassili->record->save();
+        }
+    }
+}
+";
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // LISTINGS
+    // ══════════════════════════════════════════════════════════════════════
+
+    public function getListingFilter($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
+
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\Filters;
+
+use Tassili\Prime\Http\Resources\ListingUtility;
+use Tassili\Prime\Filters\FilterText;
+
+class Filter
+{
+    public ListingUtility \$utility;
+
+    public function __construct(ListingUtility \$utility)
+    {
+        \$this->utility = \$utility;
+        \$this->register();
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function register(): void
+    {
+        \$this->utility->filterList([
+            FilterText::make('name'),
+        ]);
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+}
+";
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+
+    public function getListingBulk($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
+
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\Bulks;
+
+use Tassili\Prime\Http\Resources\ListingUtility;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Spatie\RouteAttributes\Attributes\Post;
+
+class Bulk extends Controller
+{
+    public ListingUtility \$utility;
+    public \$model = '\App\Models\\{$a}';
+
+    public function __construct(ListingUtility \$utility)
+    {
+        \$this->utility = \$utility;
+        \$this->register();
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function register(): void
+    {
+        \$this->utility->addBulk([
+            'className'    => '\App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\Bulks\Bulk',
+            'action'       => 'bulk1',
+            'permissions'  => [],
+            'label'        => 'Delete',
+            'icon'         => 'delete',
+            'class'        => 'text-white',
+            'confirmation' => 'Are you sure to delete these records?',
+            'message'      => 'Records deleted',
+        ]);
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function bulk1(Request \$request)
+    {
+        \$this->model::whereIn('id', \$request->actionIds)->delete();
+    }
+}
+";
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+
+    public function getListingModal($a, $b, $c, $panel, $panelCamel): string
+    {
+        return "<?php
+
+namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\ModalForms;
+
+use Tassili\Prime\Http\Resources\ListingUtility;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Spatie\RouteAttributes\Attributes\Post;
+use Tassili\Prime\Fields\TextInput;
+
+class Modal extends Controller
+{
+    public ListingUtility \$utility;
+    public \$model = '\App\Models\\{$a}';
+
+    public function __construct(ListingUtility \$utility)
+    {
+        \$this->utility = \$utility;
+        \$this->register();
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function register(): void
+    {
+        \$this->utility->addModalForm([
+            'className'   => '\App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\ModalForms\Modal',
+            'action'      => 'modal1',
+            'permissions' => [],
+            'icon'        => 'edit',
+            'text'        => 'Qte',
+            'class'       => 'text-white',
+            'confirm'     => 'Are you sure to change record?',
+        ])->form([
+            TextInput::make('name'),
+        ]);
+    }
+
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+
+    public function modal1(Request \$request)
+    {
+        \$request->validate(['name' => ['required']]);
+        \$this->utility->record = \$this->model::find(\$request->id);
+
+        if (\$this->utility->record !== null) {
+            \$this->utility->updateRecord(\$request);
+            \$this->utility->record->save();
+        }
+    }
+}
+";
+    }
 }
