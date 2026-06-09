@@ -7,16 +7,17 @@
           <div class="grid max-[600px]:grid-cols-1
           max-[1000px]:grid-cols-2 grid-cols-3 p-[10px] pb-[10px] gap-[10px]">
 
-          <Widget :Myprops=props.widget1  :NameWidget="'widget1'" />
-          <Widget :Myprops=props.widget2  :NameWidget="'widget2'"  />
-          <Widget :Myprops=props.widget3  :NameWidget="'widget3'"/>
-              <ChartBarre :Myprops=props.chart1 :Namechart="'chart1'" />
-              <ChartLine :Myprops=props.chart3 :Namechart="'chart3'" />
-              <ChartPolarArea :Myprops=props.chart2 :Namechart="'chart2'" />
-          <Widget :Myprops=props.widget4  :NameWidget="'widget4'" />
-          <Widget :Myprops=props.widget5  :NameWidget="'widget5'"  />
-          <Widget :Myprops=props.widget6  :NameWidget="'widget6'"/>
+          <Widget :Myprops=page.props.widget1  :NameWidget="'widget1'" />
+          <Widget :Myprops=page.props.widget2  :NameWidget="'widget2'"  />
+          <Widget :Myprops=page.props.widget3  :NameWidget="'widget3'"/>
+              <ChartBarre :Myprops=page.props.chart1 :Namechart="'chart1'" />
+              <ChartLine :Myprops=page.props.chart3 :Namechart="'chart3'" />
+              <ChartPolarArea :Myprops=page.props.chart2 :Namechart="'chart2'" />
+          <Widget :Myprops=page.props.widget4  :NameWidget="'widget4'" />
+          <Widget :Myprops=page.props.widget5  :NameWidget="'widget5'"  />
+          <Widget :Myprops=page.props.widget6  :NameWidget="'widget6'"/>
           </div>
+
         </div>
     </div>
   </template>
@@ -30,53 +31,14 @@
   import Widget from  '@/vendor/TassiliLibs/Widgets/Widget.vue';
   import TopBarre from '@/vendor/TassiliLibs/TopBarre.vue';
   import { TassiliRoutes } from '@/vendor/TassiliLibs/stores/tassiliRoutes';
+  import { usePage } from '@inertiajs/vue3';
+  import { Permission } from '@/vendor/TassiliLibs/stores/permission.js';
+  
 
-  const props = defineProps({
-  tassiliSettings: {
-    type: Object,
-    required: true
-  },
-  chart1: {
-    type: Object,
-    required: true
-  },
-  chart2: {
-    type: Object,
-    required: true
-  },
-  chart3: {
-    type: Object,
-    required: true
-  },
-  widget1: {
-      type: Object,
-    required: true
-  },
-  widget2: {
-    type: Object,
-    required: true
-  },
-  widget3: {
-    type: Object,
-    required: true
-  },
-  widget4: {
-      type: Object,
-    required: true
-  },
-  widget5: {
-    type: Object,
-    required: true
-  },
-  widget6: {
-    type: Object,
-    required: true
-  },
-});
-
+const page = usePage()
 const tassiliroutes  = TassiliRoutes();
-
-tassiliroutes.setRoutes(props.tassiliSettings.routes,props.tassiliSettings.tassiliPanel)
+const permission = Permission()
+tassiliroutes.setRoutes(page.props.tassiliSettings.routes,page.props.tassiliSettings.tassiliPanel)
 
 
 </script>
