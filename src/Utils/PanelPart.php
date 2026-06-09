@@ -41,6 +41,9 @@ class DashboardController extends Controller
            'tassiliUrlStorage' => config('tassili.storage_url'),
            'tassiliPanel' => \$this->tassiliPanel,
            'company' => config('tassili.company'),
+           'permissions' => auth()->user()
+                      ->getAllPermissions()
+                      ->pluck('name'),
         ];
     } 
 
