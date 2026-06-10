@@ -40,7 +40,8 @@ function deleteRecord() {
          id:  props.item.id,
          model: page.props.tassiliSettings['collections'][props.collection]['model'] ,
          urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU: page.props.tassiliSettings['collections'][props.collection]['urlDelete'],
-         permissions17485RRY4R4RD9448RK48K4RFRFIRU: JSON.stringify(page.props.tassiliSettings['collections'][props.collection]['permissionsToDelelteByID'])
+         permissions17485RRY4R4RD9448RK48K4RFRFIRU: JSON.stringify(page.props.tassiliSettings['collections'][props.collection]['permissionsToDelelteByID']),
+         collection17485RRY4R4RD9448RK48K4RFRFIRU: props.collection,
      })
     
     form.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', {

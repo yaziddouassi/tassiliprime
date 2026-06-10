@@ -91,6 +91,7 @@ function open() {
          actionIds:  tassiliBulk.bulkTabs[props.collection],
          urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU: tassiliBulk.bulks[props.collection][cle].url,
          permissions17485RRY4R4RD9448RK48K4RFRFIRU:JSON.stringify(tassiliBulk.bulks[props.collection][cle]['permissions']),
+         collection17485RRY4R4RD9448RK48K4RFRFIRU: props.collection,
      })
     
     form.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', {
