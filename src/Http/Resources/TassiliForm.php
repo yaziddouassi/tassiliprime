@@ -332,6 +332,54 @@ class TassiliForm
     }
 
     
+public function checkPermissions(Request $request)
+{
+    $stop = false;
+
+    $hasUrl   = $request->has('urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU');
+    $hasPerms = $request->has('permissions17485RRY4R4RD9448RK48K4RFRFIRU');
+
+    if ($hasUrl && $hasPerms) {
+        $urlValidation = $request->urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU;
+        $permissions   = json_decode($request->permissions17485RRY4R4RD9448RK48K4RFRFIRU, true);
+        if ($request->has('collection17485RRY4R4RD9448RK48K4RFRFIRU')) {
+            $collection = $request->collection17485RRY4R4RD9448RK48K4RFRFIRU;
+
+            // checkPermissions1 : bulks
+            if (
+                isset($this->bulks[$collection][$urlValidation]) &&
+                $this->bulks[$collection][$urlValidation]['permissions'] == $permissions
+            ) {
+                $stop = true;
+            }
+
+            // checkPermissions2 : collections
+            if (
+                isset($this->collections[$collection]) &&
+                $this->collections[$collection]['urlDelete'] == $urlValidation &&
+                $this->collections[$collection]['permissionsToDelelteByID'] == $permissions
+            ) {
+                $stop = true;
+            }
+
+        } else {
+            // checkPermissions3 : tassiliFormList (pas de collection)
+            if (
+                isset($this->tassiliFormList[$urlValidation]) &&
+                $this->tassiliFormList[$urlValidation]['info']['permissions'] == $permissions
+            ) {
+                $stop = true;
+            }
+        }
+    }
+
+    if (!$stop) {
+        abort(404, 'Ressource introuvable.');
+    }
+}
+
+
+    
     public function getInertiaData(): array
     {
         return [
