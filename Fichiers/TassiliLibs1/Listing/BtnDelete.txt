@@ -35,6 +35,7 @@ function deleteRecord() {
   const form = useForm({
          id:  props.item.id,
          model: page.props.tassiliSettings.tassiliModelClass ,
+         permissions: JSON.stringify(page.props.tassiliSettings.permissionsToDeleteById),
      })
     
     form.post(page.props.tassiliSettings.urlDelete, {

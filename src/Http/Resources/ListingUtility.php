@@ -271,6 +271,21 @@ class ListingUtility
         $this->record[$key] = json_encode($tab1);
     }
 
+    public function checkPermissionsDeleteById(Request $request) {
+
+        $stop = false ;
+        if($request->has('permissions')) {
+           $permissions   = json_decode($request->permissions, true);
+            if($this->tassiliSettings['permissionsToDeleteById'] ==  $permissions) {
+            $stop = true ;
+            }
+        }
+
+       if (!$stop) {
+           abort(404, 'Error Process!');
+         }
+
+    }
    
     public function getInertiaData(): array
     {
