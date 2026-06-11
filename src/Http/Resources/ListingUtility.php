@@ -271,6 +271,29 @@ class ListingUtility
         $this->record[$key] = json_encode($tab1);
     }
 
+    public function checkPermissions(Request $request) {
+    $stop = false;
+
+    if (
+        $request->has('urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU') &&
+        $request->has('permissions17485RRY4R4RD9448RK48K4RFRFIRU')
+    ) {
+        $urlValidation = $request->urlValidationurlValidationurlValidationTassili17485RRY4R4RD9448RK48K4RFRFIRU;
+        $permissions   = json_decode($request->permissions17485RRY4R4RD9448RK48K4RFRFIRU, true);
+
+        if (
+            (isset($this->tassiliFormList[$urlValidation]) && $this->tassiliFormList[$urlValidation]['info']['permissions'] == $permissions) ||
+            (isset($this->groupActions[$urlValidation])    && $this->groupActions[$urlValidation]['permissions'] == $permissions)
+        ) {
+            $stop = true;
+        }
+    }
+
+    if (!$stop) {
+        abort(404, 'Error Process!');
+    }
+    } 
+
     public function checkPermissionsDeleteById(Request $request) {
 
         $stop = false ;
