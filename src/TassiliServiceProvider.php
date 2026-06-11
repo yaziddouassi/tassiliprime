@@ -29,6 +29,7 @@ class TassiliServiceProvider extends ServiceProvider
             \Tassili\Prime\Commands\CreateUser::class,
             \Tassili\Prime\Commands\CrudCommand::class,
             \Tassili\Prime\Commands\WizardCommand::class,
+            \Tassili\Prime\Commands\CreateCollection::class,
         ]);
     }
 }
