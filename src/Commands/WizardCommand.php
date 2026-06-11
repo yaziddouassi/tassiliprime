@@ -9,7 +9,7 @@ use Tassili\Prime\Utils\WizardPart;
 
 class WizardCommand extends Command
 {
-    protected $signature = 'make:wizard';
+    protected $signature = 'make:wizard-crud';
     protected $description = 'Create Crud (v2)';
 
     public function handle()
