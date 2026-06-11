@@ -173,7 +173,8 @@ class {{ class }} extends Controller
             'className'                => '{{ ownClass }}',
             'action'                   => 'deleteById',
             'showDelete'               => True,
-            'records'                  => fn() => {{ modelFull }}::paginate(15, ['*'], '{{ paginationKey }}'),
+            'records'                  => function() { 
+             return {{ modelFull }}::paginate(10, ['*'], '{{ paginationKey }}') ; },
         ]);
 
         $this->tassili->collectionFormInsert([
