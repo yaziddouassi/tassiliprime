@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class CreateCollection extends Command
 {
-    protected $signature = 'make:tassili-collection';
+    protected $signature = 'make:collection';
 
     protected $description = 'Create tassili colection';
 
