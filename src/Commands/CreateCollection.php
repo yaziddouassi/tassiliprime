@@ -173,7 +173,7 @@ class {{ class }} extends Controller
             'className'                => '{{ ownClass }}',
             'action'                   => 'deleteById',
             'showDelete'               => True,
-            'records'                  => function() { 
+            'records'                  => function() use ($request ,$options) { 
              return {{ modelFull }}::paginate(10, ['*'], '{{ paginationKey }}') ; },
         ]);
 
