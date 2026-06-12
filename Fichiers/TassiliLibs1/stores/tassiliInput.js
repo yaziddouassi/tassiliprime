@@ -65,11 +65,15 @@ Object.entries(this.recordAction).forEach(([key, value]) => {
   
 if(key in this.form[this.urlCustomValidation]) {
 
-const tab1 = ['Text','Date','Number','Hidden','Select','Checkbox','Radio','Quill','Textarea','Signature'];
+const tab1 = ['Text','Date','Number','Hidden','Checkbox','Radio','Quill','Textarea','Signature'];
 
 if(tab1.includes(this.form[this.urlCustomValidation][key]['type'])) {
 
 this.form[this.urlCustomValidation][key]['value'] = value
+}
+
+else if(this.form[this.urlCustomValidation][key]['type']  == 'Select') {
+this.form[this.urlCustomValidation][key]['value'] = String(value)
 }
 
 else if(this.form[this.urlCustomValidation][key]['type']  == 'File') {

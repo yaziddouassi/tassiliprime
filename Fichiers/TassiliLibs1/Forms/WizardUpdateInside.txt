@@ -161,13 +161,16 @@ function initField() {
   if(key in tassiliInput.form[formKey]) {
 
 
-const tab1 = ['Text','Date','Number','Hidden','Select','Checkbox','Radio','Quill','Textarea','Signature'];
+const tab1 = ['Text','Date','Number','Hidden','Checkbox','Radio','Quill','Textarea','Signature'];
 
 if(tab1.includes(tassiliInput.form[formKey][key]['type'])) {
 
 tassiliInput.form[formKey][key]['value'] = value
 }
 
+else if(tassiliInput.form[formKey][key]['type']  == 'Select') {
+  tassiliInput.form[formKey][key]['value'] = String(value)
+}
 
 else if(tassiliInput.form[formKey][key]['type']  == 'File') {
 tassiliInput.form[formKey][key]['options']['urlRecord'] = value

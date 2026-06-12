@@ -53,13 +53,16 @@ Object.entries(b).forEach(([key, value]) => {
   if(key in tassiliInput.form[a]) {
 
 
-const tab1 = ['Text','Date','Number','Hidden','Select','Checkbox','Radio','Quill','Textarea','Signature'];
+const tab1 = ['Text','Date','Number','Hidden','Checkbox','Radio','Quill','Textarea','Signature'];
 
 if(tab1.includes(tassiliInput.form[a][key]['type'])) {
 
 tassiliInput.form[a][key]['value'] = value
 }
 
+else if(tassiliInput.form[a][key]['type']  == 'Select') {
+  tassiliInput.form[a][key]['value'] = String(value)
+}
 
 else if(tassiliInput.form[a][key]['type']  == 'File') {
 tassiliInput.form[a][key]['options']['urlRecord'] = value
