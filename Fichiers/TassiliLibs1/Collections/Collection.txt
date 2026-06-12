@@ -67,7 +67,7 @@
                         <AudioView :path="item[index]" :width="'100px'" />
                       </td>   
                    </template>
-                    <template v-if="value==='column'">
+                    <template v-if="value==='Column'">
                      <td class="py-3 px-4 whitespace-nowrap">
                         {{ item[index] }}
                       </td>   
