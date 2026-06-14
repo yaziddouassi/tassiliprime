@@ -1,6 +1,6 @@
 {
     "name": "tassili/prime",
-    "description": "package laravel inertia vue admin",
+    "description": "Tassili CRUD admin for laravel inertia vue created by Rabah Douassi",
     "type": "library",
     "license": "MIT",
     "autoload": {
