@@ -24,6 +24,10 @@ npm install pinia
 npm install notyf
 npm install material-icons
 composer require spatie/laravel-route-attributes
+composer require spatie/laravel-permission
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan config:clear
+php artisan migrate
 ```
 
 ---
