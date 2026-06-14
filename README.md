@@ -27,8 +27,23 @@ composer require spatie/laravel-route-attributes
 ```
 
 ---
+### 2. Update User Model
+In your `App/Models/User.php`, add:
 
-### 2. Configure if you are not using typescript `resources/js/app.js`
+```php
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+ {
+   use HasRoles;
+    ...
+ }
+```
+
+---
+
+### 3. Configure if you are not using typescript `resources/js/app.js`
 
 ```js
 import '../css/app.css';
@@ -62,7 +77,7 @@ createInertiaApp({
 ```
 ---
 
-### 2-b. Configure if you are using typescript `resources/js/app.ts` 
+### 3-b. Configure if you are using typescript `resources/js/app.ts` 
 
 ```js
 import '../css/app.css';
@@ -97,7 +112,7 @@ createInertiaApp({
 
 ---
 
-### 3. Storage Configuration (example for `public` disk)
+### 4. Storage Configuration (example for `public` disk)
 
 ```env
 TASSILI_STORAGE_DISK=public
@@ -107,10 +122,10 @@ GUMROAD_TASSILI_LICENSE_KEY=YourTassiliGumroadKey
 
 ---
 
-### 4. Install Tassili
+### 5. Install Tassili
 
 ```bash
-composer require tassili/premium
+composer require tassili/prime
 php artisan migrate
 php artisan tassili:install
 php artisan vendor:publish --tag=tassili-config
@@ -120,7 +135,7 @@ php artisan storage:link
 
 ---
 
-### 5. Register Tassili Middleware
+### 6. Register Tassili Middleware
 
 In your `bootstrap/app.php`, add:
 
@@ -131,7 +146,7 @@ $middleware->alias([
 ```
 ---
 
-### 6. Update AppServiceProvider
+### 7. Update AppServiceProvider
 
 In your `app/Providers/AppServiceProvider.php`, add:
 
@@ -171,4 +186,4 @@ This project is licensed under a commercial license via [Gumroad](https://yazid4
 
 ---
 
-**Crafted with ❤️ by [Lh digital]**
+**Crafted with ❤️ by Rabah Douassi**
