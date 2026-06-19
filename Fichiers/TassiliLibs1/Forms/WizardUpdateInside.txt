@@ -60,7 +60,8 @@
 
        <LoadAction :formKey="formKey" />
       
-       <div class="mt-[10px] flex flex-wrap gap-[5px]">
+       <div class="mt-[10px] flex flex-wrap gap-[5px]"
+        v-if="doubleClick">
              <div v-if="(tassiliInput.tassiliFormList[formKey]['info']['wizardCurrent'] != tassiliInput.tassiliFormList[formKey]['info']['wizard'].wizardCount)">
             <button class="bg-[black] min-w-[100px] text-white p-[9px] rounded-[2px]" type="button"
             @click="submit('next')">
@@ -116,7 +117,7 @@ import Repeteur from '../Inputs/Repeteur.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import { computed } from "vue";
+import { computed , ref} from "vue";
 import WizardStep from './WizardStep.vue';
 import LoadAction from './LoadAction.vue';
 import { Permission } from '../stores/permission';
@@ -240,9 +241,13 @@ function checkNullable() {
   return temoin;
 }
 
-
+const doubleClick = ref(true)
 
 function insert(action) {
+if (doubleClick.value !== true) {
+     return;
+  }
+doubleClick.value = false
 
 const temoin = checkNullable();
 
@@ -383,7 +388,10 @@ if (tassiliInput.form[formKey][key]['type'] === 'Repeater' ) {
      else if (action === 'next') {
         nextValidate();
       }
-
+    },
+    
+    onFinish: () => {
+      doubleClick.value = true
     },
   });
 }

@@ -58,7 +58,8 @@
 
       <LoadAction :formKey="tassiliInput.urlCustomValidation" /> 
 
-      <div class="pt-[10px] pt-[0px] flex flex-wrap gap-[5px]">
+      <div class="pt-[10px] pt-[0px] flex flex-wrap gap-[5px]"
+       v-if="doubleClick">
           <div v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] != 1)" @click="reculer()" >
             <button class="bg-[black] min-w-[100px] text-white p-[9px] rounded-[2px]" type="button">
               Previous
@@ -162,9 +163,13 @@ function cleanQuillContent(html) {
   return html.replace(/<p>\s*<\/p>/g, '').replace(/<p><br><\/p>/g, '').trim();
 }
 
+const doubleClick = ref(true)
 
 function insert(action) {
-
+  if (doubleClick.value !== true) {
+     return;
+  }
+  doubleClick.value = false
   const formData = new FormData();
 
   tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'on'
@@ -288,7 +293,10 @@ if (tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'] === 'Repeat
      else if (action === 'next') {
         nextValidate();
       }
-    
+    },
+
+    onFinish: () => {
+      doubleClick.value = true
     },
   });
 }

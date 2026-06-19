@@ -145,11 +145,10 @@ namespace {{ namespace }};
 
 use Illuminate\Http\Request;
 use Tassili\Prime\Http\Resources\TassiliForm;
-use App\Http\Controllers\Controller;
 use Tassili\Prime\Fields\TextInput;
 use Spatie\RouteAttributes\Attributes\Post;
 
-class {{ class }} extends Controller
+class {{ class }}
 {
     public TassiliForm $tassili;
     public $model = '{{ modelFull }}';

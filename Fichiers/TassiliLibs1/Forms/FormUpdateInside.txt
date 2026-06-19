@@ -55,7 +55,8 @@
 
        <LoadAction :formKey="formKey" />
 
-       <div class="mt-[10px] flex flew-wrap gap-[5px]">
+       <div class="mt-[10px] flex flew-wrap gap-[5px]"
+       v-if="doubleClick">
           
                 <div>
                 <button class="bg-[blue] w-[150px] text-white p-[9px] rounded-[2px]" type="submit">
@@ -99,7 +100,7 @@ import Repeteur from '../Inputs/Repeteur.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import { computed } from "vue";
+import { computed , ref} from "vue";
 import LoadAction from './LoadAction.vue';
 import { Permission } from '../stores/permission';
 
@@ -213,9 +214,14 @@ function checkNullable() {
   return temoin;
 }
 
-
+const doubleClick = ref(true)
 
 function insert(action) {
+
+if (doubleClick.value !== true) {
+     return;
+}
+doubleClick.value = false
 
 const temoin = checkNullable();
 
@@ -341,6 +347,10 @@ if (tassiliInput.form[formKey][key]['type'] === 'Repeater' ) {
           notyf.success(tassiliInput.tassiliFormList[formKey]['info']['updateMessage']);
           tassiliInput.tassiliFormList[formKey]['info']['isAnimated'] = 'off'
       }
+    },
+
+    onFinish: () => {
+      doubleClick.value = true
     },
   });
 }
