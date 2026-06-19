@@ -59,7 +59,8 @@
 
       <LoadAction :formKey="tassiliInput.urlCustomValidation" /> 
 
-      <div class="max-w-[560px] mt-[10px] flex flex-wrap gap-[5px]">
+      <div class="max-w-[560px] mt-[10px] flex flex-wrap gap-[5px]"
+       v-if="doubleClick">
             <div v-if="(tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['wizardCurrent'] != 1)" @click="reculer()">
             <button class="bg-black w-[100px] text-white p-[9px] rounded-[2px] border border-white" type="button">
               Previous
@@ -176,9 +177,14 @@ function checkNullable() {
 }
 
 
-
+const doubleClick = ref(true)
 
 function insert(action) {
+if (doubleClick.value !== true) {
+     return;
+  }
+  doubleClick.value = false
+
 tassiliInput.isAnimated = 'on'
 const temoin = checkNullable();
 
@@ -290,7 +296,10 @@ router.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', formDat
        nextValidate();
        tassiliInput.resetError();
       }
-    }
+    },
+    onFinish: () => {
+      doubleClick.value = true
+    },
   });
 
 

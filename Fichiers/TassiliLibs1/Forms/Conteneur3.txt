@@ -54,7 +54,8 @@
 
       <LoadAction :formKey="tassiliInput.urlCustomValidation" /> 
 
-      <div class="pt-[10px] p-[0px]">
+      <div class="pt-[10px] p-[0px]" 
+      v-if="doubleClick">
         <button
           class="bg-[blue] min-w-[100px] text-white p-[9px] rounded-[2px] flex justify-center items-center"
           type="submit">
@@ -86,7 +87,7 @@ import Repeteur from '../Inputs/Repeteur.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import { computed } from "vue";
+import { computed , ref} from "vue";
 import LoadAction from './LoadAction.vue';
 import { Permission } from '../stores/permission.js';
 
@@ -130,10 +131,13 @@ function checkNullable() {
   return temoin;
 }
 
-
+const doubleClick = ref(true)
 
 function update() {
-
+  if (doubleClick.value !== true) {
+     return;
+  }
+  doubleClick.value = false
 const temoin = checkNullable();
 
 if (temoin > 0) {
@@ -238,6 +242,11 @@ if (tassiliInput.form[tassiliInput.urlCustomValidation][key]['type'] === 'Repeat
       tassiliInput.customActionModal = false; 
       tassiliInput.tassiliFormList[tassiliInput.urlCustomValidation]['info']['isAnimated'] = 'off'
     },
+    onFinish: () => {
+      doubleClick.value = true
+    },
+
+
   });
 }
 

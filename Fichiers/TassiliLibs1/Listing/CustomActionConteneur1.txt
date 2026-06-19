@@ -53,7 +53,8 @@
        </template>
       </div>
 
-      <div class="pt-[10px] p-[0px]">
+      <div class="pt-[10px] p-[0px]"
+       v-if="doubleClick">
         <button
           :disabled="isSubmitting"
           :class="[
@@ -137,9 +138,13 @@ function checkNullable() {
   return temoin;
 }
 
-
+const doubleClick = ref(true)
 
 function update() {
+if (doubleClick.value !== true) {
+     return;
+  }
+  doubleClick.value = false
 
 const temoin = checkNullable();
 
@@ -240,6 +245,9 @@ if (tassiliInput.form[tassililisting.urlCustomValidation][key]['type'] === 'Repe
       isSubmitting.value = false;
       const notyf = new Notyf({ position: { x: 'right', y: 'top' } });
       notyf.success('Record Updated');
+    },
+    onFinish: () => {
+      doubleClick.value = true
     },
   });
 }

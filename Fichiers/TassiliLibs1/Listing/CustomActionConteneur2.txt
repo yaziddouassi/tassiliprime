@@ -61,7 +61,8 @@
 
         <LoadAction/>
 
-        <div class="max-w-[560px] mt-[10px] flex gap-[5px]">
+        <div class="max-w-[560px] mt-[10px] flex gap-[5px]"
+         v-if="doubleClick">
               <button  v-if="(tassiliInput.tassiliFormList[tassililisting.urlCustomValidation]['info']['wizardCurrent'] == tassiliInput.tassiliFormList[tassililisting.urlCustomValidation]['info']['wizard'].wizardCount) ||
                 tassiliInput.tassiliFormList[tassililisting.urlCustomValidation]['info']['wizard'].wizardStop.includes(tassiliInput.tassiliFormList[tassililisting.urlCustomValidation]['info']['wizardCurrent'])"
             
@@ -112,7 +113,7 @@ import { router } from '@inertiajs/vue3';
 import LoadAction from '../LoadAction.vue';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import { computed } from "vue";
+import { computed , ref} from "vue";
 import { Permission } from '../stores/permission.js';
 
 const permission = Permission()
@@ -179,9 +180,14 @@ function checkNullable() {
 }
 
 
-
+const doubleClick = ref(true)
 
 function insert(action) {
+if (doubleClick.value !== true) {
+     return;
+  }
+  doubleClick.value = false
+
 tassiliInput.isAnimated = 'on'
 const temoin = checkNullable();
 
@@ -300,7 +306,10 @@ router.post('/tassili17485RRY4R4RD9448RK48K4RFRFIRU/valideur/framework', formDat
        nextValidate();
        tassiliInput.resetError();
       }
-    }
+    },
+    onFinish: () => {
+      doubleClick.value = true
+    },
   });
 
 
