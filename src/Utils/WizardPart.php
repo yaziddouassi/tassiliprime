@@ -469,11 +469,10 @@ class Filter
 namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\Bulks;
 
 use Tassili\Prime\Http\Resources\ListingUtility;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\RouteAttributes\Attributes\Post;
 
-class Bulk extends Controller
+class Bulk
 {
     public ListingUtility \$utility;
     public \$model = '\App\Models\\{$a}';
@@ -522,12 +521,11 @@ class Bulk extends Controller
 namespace App\Http\Controllers\Tassili\\{$panelCamel}\Crud\\{$a}\Listings\ModalForms;
 
 use Tassili\Prime\Http\Resources\ListingUtility;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\RouteAttributes\Attributes\Post;
 use Tassili\Prime\Fields\TextInput;
 
-class Modal extends Controller
+class Modal
 {
     public ListingUtility \$utility;
     public \$model = '\App\Models\\{$a}';

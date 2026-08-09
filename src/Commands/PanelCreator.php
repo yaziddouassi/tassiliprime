@@ -15,7 +15,7 @@ class PanelCreator extends Command
      *
      * @var string
      */
-    protected $signature = 'make:panel';
+    protected $signature = 'make:tassili-panel';
 
     /**
      * The console command description.

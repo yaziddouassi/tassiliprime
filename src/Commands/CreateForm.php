@@ -9,7 +9,7 @@ use Tassili\Prime\Utils\FormPart  ;
 
 class CreateForm extends Command
 {
-    protected $signature = 'make:form';
+    protected $signature = 'make:tassili-form';
 
     protected $description = 'Create tassili form';
 

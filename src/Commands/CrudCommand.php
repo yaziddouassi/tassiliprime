@@ -9,7 +9,7 @@ use Tassili\Prime\Utils\CrudPart;
 
 class CrudCommand extends Command
 {
-    protected $signature = 'make:crud';
+    protected $signature = 'make:tassili-crud';
     protected $description = 'Create Crud (v2)';
 
     public function handle()
