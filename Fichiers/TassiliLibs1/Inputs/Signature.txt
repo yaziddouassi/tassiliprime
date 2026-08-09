@@ -330,7 +330,11 @@ const autoSaveSignature = () => {
   const dataURL = signatureCanvas.value.toDataURL('image/png')
   
   // Mettre à jour la valeur dans le store
-  tassiliInput.form[props.cle]['value'] = dataURL
+  // Correction : il manquait props.FormKey dans le chemin,
+  // ce qui écrivait dans tassiliInput.form[props.cle] au lieu de
+  // tassiliInput.form[props.FormKey][props.cle], laissant la vraie
+  // valeur à '' et provoquant l'envoi d'un champ vide au serveur.
+  tassiliInput.form[props.FormKey][props.cle]['value'] = dataURL
 }
 
 // Vérifier si le canvas est vide
